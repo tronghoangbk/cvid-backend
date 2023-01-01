@@ -7,7 +7,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const Schema = mongoose_1.default.Schema;
 const major = new Schema({
     level: { type: String, required: true, unique: true },
-    majors: { type: Array },
+    majors: { type: (Array) },
 }, {
     timestamps: true,
 });

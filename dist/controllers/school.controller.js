@@ -18,13 +18,23 @@ const model_service_1 = require("../services/model.service");
 const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const schools = yield (0, model_service_1.findManyService)(school_model_1.default, {});
-        res.status(200).json({ schools: schools, message: "Get all schools successfully" });
+        res.status(200).json({ data: schools, message: "Get all schools successfully" });
     }
     catch (error) {
         res.status(500).json({ message: "Something went wrong" });
     }
 });
 exports.getAll = getAll;
+const getListLevel = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let schools = yield (0, model_service_1.findManyService)(school_model_1.default, {});
+        schools = schools.map((item) => item.level);
+        res.status(200).json({ data: schools, message: "Get list levels successfully" });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
 const createMany = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { data } = req.body;

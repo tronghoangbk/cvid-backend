@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyToken = exports.generateToken = exports.hashPassword = exports.comparePassword = exports.postDataFromURL = exports.getDataFromURL = exports.removeUndefinedOfObj = void 0;
+exports.checkOTP = exports.verifyToken = exports.generateToken = exports.hashPassword = exports.comparePassword = exports.postDataFromURL = exports.getDataFromURL = exports.removeUndefinedOfObj = void 0;
 const axios_1 = __importDefault(require("axios"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
@@ -90,3 +90,16 @@ const verifyToken = (token) => {
     }
 };
 exports.verifyToken = verifyToken;
+const checkOTP = (otp, otpHash) => {
+    try {
+        const decoded = jsonwebtoken_1.default.verify(otpHash, SECRET_KEY);
+        if (decoded.otp === otp && decoded.exp > Date.now()) {
+            return true;
+        }
+        return false;
+    }
+    catch (error) {
+        throw error;
+    }
+};
+exports.checkOTP = checkOTP;

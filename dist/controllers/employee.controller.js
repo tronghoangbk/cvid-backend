@@ -12,7 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.verified = exports.verifyEmail = exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getAllEmployee = exports.createCV = exports.register = exports.login = void 0;
 const employee_model_1 = __importDefault(require("../models/employee.model"));
+const path_1 = __importDefault(require("path"));
 const model_service_1 = require("../services/model.service");
 const other_service_1 = require("../services/other.service");
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -32,6 +34,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(500).json({ message: "Something went wrong" });
     }
 });
+exports.login = login;
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const newUser = req.body;
@@ -43,6 +46,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(500).json({ message: "Something went wrong" });
     }
 });
+exports.register = register;
 const createCV = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.body._id;
@@ -53,6 +57,7 @@ const createCV = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(500).json({ message: "Something went wrong" });
     }
 });
+exports.createCV = createCV;
 const getAllEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const employees = yield (0, model_service_1.findManyService)(employee_model_1.default, {});
@@ -62,6 +67,7 @@ const getAllEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.status(500).json({ message: "Something went wrong" });
     }
 });
+exports.getAllEmployee = getAllEmployee;
 const getEmployeeById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
@@ -72,6 +78,7 @@ const getEmployeeById = (req, res) => __awaiter(void 0, void 0, void 0, function
         res.status(500).json({ message: "Something went wrong" });
     }
 });
+exports.getEmployeeById = getEmployeeById;
 const updateEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
@@ -82,6 +89,7 @@ const updateEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.status(500).json({ message: "Something went wrong" });
     }
 });
+exports.updateEmployee = updateEmployee;
 const deleteEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
@@ -92,4 +100,27 @@ const deleteEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.status(500).json({ message: "Something went wrong" });
     }
 });
-exports.default = { login, register, createCV };
+exports.deleteEmployee = deleteEmployee;
+const verifyEmail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { confirmEmail: true });
+        let message = "Confirm email successfully";
+        res.redirect(`/user/verified/error=false&message=${message}`);
+    }
+    catch (error) {
+        let message = "Confirm email failed";
+        res.redirect(`/user/verified/error=true&message=${message}`);
+    }
+});
+exports.verifyEmail = verifyEmail;
+const verified = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        res.sendFile(path_1.default.join(__dirname, "./../views/verified.html"));
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
+exports.verified = verified;
