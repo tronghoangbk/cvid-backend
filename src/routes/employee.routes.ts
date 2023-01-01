@@ -7,7 +7,7 @@ const employeeRouter = express.Router();
 employeeRouter.post("/login", body("username").notEmpty(), body("password").notEmpty(), checkInput, login);
 employeeRouter.post("/register", register);
 employeeRouter.post("/logout");
-employeeRouter.put("/verify-email", verifyEmail);
+employeeRouter.get("/verify-email/:id", verifyEmail);
 employeeRouter.get("/verified", verified);
 
 export default employeeRouter;

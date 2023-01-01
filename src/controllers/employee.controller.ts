@@ -8,6 +8,10 @@ import {
 	updateOneService,
 	deleteOneService,
 } from "../services/model.service";
+import { sendEmail } from "../services/mail.service";
+// import { mailForNewUser } from "../views/mailInfo";
+import fs from "fs";
+import { staticFolder } from "../constant/default.constant";
 import { comparePassword, hashPassword, generateToken } from "../services/other.service";
 
 const login = async (req: Request, res: Response) => {
@@ -18,9 +22,8 @@ const login = async (req: Request, res: Response) => {
 		const isPasswordCorrect = comparePassword(password, user.password);
 		if (!isPasswordCorrect) return res.status(401).json({ message: "Invalid credentials" });
 		const token = generateToken({ id: user._id, username: user.username }, "1d");
-		res.status(200).json({ userInfo: user, message: "Login successfully", token: token });
+		res.status(200).json({ userInfo: { ...user, idToken: token }, message: "Login successfully", token: token });
 	} catch (error: any) {
-		console.log(error);
 		res.status(500).json({ message: "Something went wrong" });
 	}
 };
@@ -28,10 +31,24 @@ const login = async (req: Request, res: Response) => {
 const register = async (req: Request, res: Response) => {
 	try {
 		const newUser = req.body;
+		let userInfo = await findOneService(UserModal, { username: newUser.username });
+		if (userInfo) return res.status(400).json({ message: "Số điện thoại đã được sử dụng" });
+		userInfo = await findOneService(UserModal, { email: newUser.email });
+		if (userInfo) return res.status(400).json({ message: "Email đã được sử dụng" });
 		newUser.password = hashPassword(newUser.password);
 		const user = await createService(UserModal, newUser);
-		res.status(200).json({ userInfo: user, message: "Register successfully" });
+		const idToken = generateToken({ id: user._id, username: user.username }, "1d");
+		const refreshToken = generateToken({ id: user._id, username: user.username }, "7d");
+		user.password = undefined;
+		// Send email
+		const subject = "Đăng ký thành công";
+		let html = fs.readFileSync(`${staticFolder}views/mailConfirm.html`, { encoding: "utf8" });
+		let link = `${req.headers.host}/employee/verify-email/${user._id}`;
+		html = html.replace("{{link}}", link);
+		await sendEmail(user.email, subject, html);
+		res.status(200).json({ idToken, refreshToken, ...user._doc, expiresIn: "3600", message: "Register successfully" });
 	} catch (error: any) {
+		console.log(error);
 		res.status(500).json({ message: "Something went wrong" });
 	}
 };
@@ -90,20 +107,30 @@ const verifyEmail = async (req: Request, res: Response) => {
 		const id = req.params.id;
 		await updateOneService(UserModal, { _id: id }, { confirmEmail: true });
 		let message = "Confirm email successfully";
-		res.redirect(`/user/verified/error=false&message=${message}`);
+		res.redirect(`/employee/verified?message=${message}`);
 	} catch (error: any) {
-        let message = "Confirm email failed";
-		res.redirect(`/user/verified/error=true&message=${message}`);
+		let message = "Confirm email failed";
+		res.redirect(`/employee/verified?error=true&message=${message}`);
 	}
 };
 
 const verified = async (req: Request, res: Response) => {
 	try {
-		res.sendFile(path.join(__dirname, "./../views/verified.html"));
+		res.sendFile(`${staticFolder}views/verified.html`);
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ message: "Something went wrong" });
 	}
 };
 
-export { login, register, createCV, getAllEmployee, getEmployeeById, updateEmployee, deleteEmployee, verifyEmail, verified };
+export {
+	login,
+	register,
+	createCV,
+	getAllEmployee,
+	getEmployeeById,
+	updateEmployee,
+	deleteEmployee,
+	verifyEmail,
+	verified,
+};

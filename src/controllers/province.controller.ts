@@ -45,7 +45,6 @@ const getListWard = async (req: Request, res: Response) => {
         let provinces = await findOneService(ProvinceModel, { name: province });
         let districts = provinces.district;
         let wards = districts.find((item: any) => item.name === district);
-        console.log(wards);
         wards = wards.ward;
         wards = wards.map((item: any) => item.name);
         res.status(200).json({ data: wards, message: "Get list wards successfully" });
