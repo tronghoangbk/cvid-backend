@@ -71,5 +71,17 @@ const verifyToken = (token: string): any => {
 	}
 };
 
+const checkOTP = (otp: string, otpHash: string) => {
+	try {
+		const decoded: any = jwt.verify(otpHash, SECRET_KEY);
+		if (decoded.otp === otp && decoded.exp > Date.now()) {
+			return true;
+		}
+		return false;
+	} catch (error: any) {
+		throw error;
+	}
+};
 
-export { removeUndefinedOfObj, getDataFromURL, postDataFromURL, comparePassword, hashPassword, generateToken, verifyToken };
+
+export { removeUndefinedOfObj, getDataFromURL, postDataFromURL, comparePassword, hashPassword, generateToken, verifyToken, checkOTP };

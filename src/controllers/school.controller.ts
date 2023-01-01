@@ -5,7 +5,18 @@ import { createService, findOneService, findManyService, updateOneService, delet
 const getAll = async (req: Request, res: Response) => {
     try {
         const schools = await findManyService(SchoolModal, {});
-        res.status(200).json({ schools: schools, message: "Get all schools successfully" });
+        res.status(200).json({ data: schools, message: "Get all schools successfully" });
+    }
+    catch (error: any) {
+        res.status(500).json({ message: "Something went wrong" });
+    }
+};
+
+const getListLevel = async (req: Request, res: Response) => {
+    try {
+        let schools = await findManyService(SchoolModal, {});
+        schools = schools.map((item: any) => item.level);
+        res.status(200).json({ data: schools, message: "Get list levels successfully" });
     }
     catch (error: any) {
         res.status(500).json({ message: "Something went wrong" });
@@ -26,5 +37,6 @@ const createMany = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Something went wrong" });
     }
 };
+
 
 export { getAll, createMany };

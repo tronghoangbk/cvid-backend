@@ -1,11 +1,11 @@
 [{
-    "level" : "Phổ thông",
+        "level" : "Phổ thông",
     "majors" : [
         "Lao động phổ thông"
     ]
 },
 {
-    "level" : "Sơ cấp",
+        "level" : "Sơ cấp",
     "majors" : [
         "Nguội căn bản",
         "Kỹ thuật gò, hàn nông thôn",
@@ -65,7 +65,7 @@
     ]
 },
 {
-    "level" : "Trung cấp",
+        "level" : "Trung cấp",
     "majors" : [
         "Tiếng Việt và văn hoá Việt Nam",
         "Văn hoá các dân tộc thiểu số Việt Nam",
@@ -892,7 +892,7 @@
     ]
 },
 {
-    "level" : "Cao đẳng",
+        "level" : "Cao đẳng",
     "majors" : [
         "Kỹ thuật điêu khắc gỗ",
         "Điêu khắc",
@@ -1515,7 +1515,7 @@
     ]
 },
 {
-    "level" : "Đại học",
+        "level" : "Đại học",
     "majors" : [
         "Giáo dục học",
         "Quản lý giáo dục",
@@ -1849,7 +1849,7 @@
     ]
 },
 {
-    "level" : "Chuyên gia",
+        "level" : "Chuyên gia",
     "majors" : [
         "Giáo dục học",
         "Quản lý giáo dục",
@@ -2181,5 +2181,4 @@
         "Quản lý đất đai",
         "Bảo hộ lao động"
     ]
-}
-]
+}]
