@@ -61,7 +61,8 @@ const getAllListMajor = async (req: Request, res: Response) => {
 				listMajors.add(major);
 			});
 		});
-		res.status(200).json({ data: listMajors, message: "Get list majors successfully" });
+        let result = Array.from(listMajors)
+		res.status(200).json({ data: result, message: "Get list majors successfully" });
 	} catch (error: any) {
 		res.status(500).json({ message: "Something went wrong" });
 	}
