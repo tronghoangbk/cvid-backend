@@ -55,7 +55,6 @@ const getListWard = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         let provinces = yield (0, model_service_1.findOneService)(province_model_1.default, { name: province });
         let districts = provinces.district;
         let wards = districts.find((item) => item.name === district);
-        console.log(wards);
         wards = wards.ward;
         wards = wards.map((item) => item.name);
         res.status(200).json({ data: wards, message: "Get list wards successfully" });

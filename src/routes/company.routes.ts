@@ -10,8 +10,8 @@ import {
 } from "../controllers/company.controller";
 const Router = express.Router();
 
-Router.get("/register", register);
-Router.get("/login", login);
+Router.post("/register", register);
+Router.post("/login", login);
 Router.get("/logout");
 Router.get("/verify-email/:id", verifyEmail);
 Router.get("/verified", verified);

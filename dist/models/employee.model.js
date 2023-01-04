@@ -13,7 +13,7 @@ const employees = new Schema({
     password: { type: String, required: true },
     ID: { type: String },
     email: { type: String, required: true, unique: true },
-    avatar: { type: String, default: "default.png" },
+    avatar: { type: String, default: "https://static.thenounproject.com/png/5034901-200.png" },
     country: { type: String },
     province: { type: String },
     district: { type: String },
@@ -34,7 +34,7 @@ const employees = new Schema({
         note: { type: String },
     },
     confirm2: {
-        confirmed: { type: Boolean, default: false },
+        confirmed: { type: Number, default: 0 },
         confirmDate: { type: Date, default: Date.now },
         confirmBy: { type: Schema.Types.ObjectId },
         note: { type: String },

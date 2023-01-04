@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const industry_controller_1 = require("../controllers/industry.controller");
+const companyType_controller_1 = require("../controllers/companyType.controller");
 const Router = express_1.default.Router();
-Router.get("/getall", industry_controller_1.getAll);
-Router.post("/create-many", industry_controller_1.createMany);
+Router.get("/getall", companyType_controller_1.getAll);
+Router.post("/create-many", companyType_controller_1.createMany);
 exports.default = Router;

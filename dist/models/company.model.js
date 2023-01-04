@@ -4,20 +4,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
+const admin_model_1 = __importDefault(require("./admin.model"));
 const Schema = mongoose_1.default.Schema;
 const companies = new Schema({
     username: { type: String, required: true, unique: true },
     companyName: { type: String, required: true },
-    companySize: { type: String },
+    businessLicense: { type: String, required: true },
     companyType: { type: String },
+    engName: { type: String },
+    sortName: { type: String },
+    mainIndustry: { type: String },
+    original: { type: String },
+    field: { type: Array },
     country: { type: String },
-    province: { type: String },
-    district: { type: String },
-    ward: { type: String },
     address: { type: String },
+    name: { type: String },
     phone: { type: String },
     email: { type: String, required: true, unique: true },
-    avatar: { type: String, default: "default.png" },
+    position: { type: String },
+    password: { type: String, required: true },
     confirmPhone: { type: Boolean, default: false },
     confirmEmail: { type: Boolean, default: false },
     confirmIdentity: { type: Boolean, default: false },
@@ -35,5 +40,17 @@ const companies = new Schema({
     },
 }, {
     timestamps: true,
+});
+companies.virtual("adminConfirm1", {
+    ref: admin_model_1.default,
+    localField: "confirm1.confirmBy",
+    foreignField: "_id",
+    justOne: true, // for many-to-1 relationships
+});
+companies.virtual("adminConfirm2", {
+    ref: admin_model_1.default,
+    localField: "confirm2.confirmBy",
+    foreignField: "_id",
+    justOne: true, // for many-to-1 relationships
 });
 exports.default = mongoose_1.default.model("company", companies);

@@ -12,44 +12,75 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verified = exports.verifyEmail = exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getAllEmployee = exports.createCV = exports.register = exports.login = void 0;
+exports.getMyReSume = exports.verified = exports.verifyEmail = exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getAllEmployee = exports.createCV = exports.register = exports.login = void 0;
 const employee_model_1 = __importDefault(require("../models/employee.model"));
-const path_1 = __importDefault(require("path"));
 const model_service_1 = require("../services/model.service");
+const mail_service_1 = require("../services/mail.service");
+const errorResponse_constant_1 = require("../constant/errorResponse.constant");
+const fs_1 = __importDefault(require("fs"));
+const default_constant_1 = require("../constant/default.constant");
 const other_service_1 = require("../services/other.service");
+const employee_model_2 = __importDefault(require("../models/employee.model"));
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, password } = req.body;
         const user = yield (0, model_service_1.findOneService)(employee_model_1.default, { username: username });
         if (!user)
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: errorResponse_constant_1.errorResponse["USER_NOT_FOUND"] });
         const isPasswordCorrect = (0, other_service_1.comparePassword)(password, user.password);
         if (!isPasswordCorrect)
-            return res.status(401).json({ message: "Invalid credentials" });
-        const token = (0, other_service_1.generateToken)({ id: user._id, username: user.username }, "1d");
-        res.status(200).json({ userInfo: user, message: "Login successfully", token: token });
+            return res.status(401).json({ message: errorResponse_constant_1.errorResponse["INVALID_PASSWORD"] });
+        if (!user.confirmEmail)
+            return res.status(403).json({ message: errorResponse_constant_1.errorResponse["USER_NOT_CONFIRMED"] });
+        const idToken = (0, other_service_1.generateToken)({ id: user._id, username: user.username }, "1d");
+        res.status(200).json(Object.assign(Object.assign({}, user._doc), { idToken, expiresIn: "3600" }));
     }
     catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Something went wrong" });
+        res.status(500).json({ message: errorResponse_constant_1.errorResponse["SERVER_ERROR"] });
     }
 });
 exports.login = login;
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const newUser = req.body;
+        let userInfo = yield (0, model_service_1.findOneService)(employee_model_1.default, { username: newUser.username });
+        if (userInfo)
+            return res.status(400).json({ message: errorResponse_constant_1.errorResponse["PHONE_EXISTS"] });
+        userInfo = yield (0, model_service_1.findOneService)(employee_model_1.default, { email: newUser.email });
+        if (userInfo)
+            return res.status(400).json({ message: errorResponse_constant_1.errorResponse["EMAIL_EXISTS"] });
         newUser.password = (0, other_service_1.hashPassword)(newUser.password);
         const user = yield (0, model_service_1.createService)(employee_model_1.default, newUser);
-        res.status(200).json({ userInfo: user, message: "Register successfully" });
+        // Send email
+        const subject = "Đăng ký thành công";
+        let html = fs_1.default.readFileSync(`${default_constant_1.staticFolder}views/mailConfirm.html`, { encoding: "utf8" });
+        let link = `${req.headers.host}/employee/verify-email/${user._id}`;
+        html = html.replace("{{link}}", link);
+        yield (0, mail_service_1.sendEmail)(user.email, subject, html);
+        res.status(200).json({ message: "Register successfully" });
     }
     catch (error) {
-        res.status(500).json({ message: "Something went wrong" });
+        console.log(error);
+        res.status(500).json({ message: errorResponse_constant_1.errorResponse["SERVER_ERROR"] });
     }
 });
 exports.register = register;
+const getMyReSume = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let userId = req.body.user.id;
+        let userInfo = yield (0, model_service_1.findOneService)(employee_model_2.default, { _id: userId });
+        delete userInfo.password;
+        res.status(200).json(Object.assign({}, userInfo));
+    }
+    catch (error) {
+        res.status(500).json({ message: errorResponse_constant_1.errorResponse["SERVER_ERROR"] });
+    }
+});
+exports.getMyReSume = getMyReSume;
 const createCV = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const id = req.body._id;
+        const id = req.params._id;
+        (0, other_service_1.removeUndefinedOfObj)(req.body);
         yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, req.body);
         res.status(200).json({ message: "Create CV successfully" });
     }
@@ -105,18 +136,18 @@ const verifyEmail = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const id = req.params.id;
         yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { confirmEmail: true });
-        let message = "Confirm email successfully";
-        res.redirect(`/user/verified/error=false&message=${message}`);
+        let message = "Xác nhận email thành công";
+        res.redirect(`/employee/verified?message=${message}`);
     }
     catch (error) {
-        let message = "Confirm email failed";
-        res.redirect(`/user/verified/error=true&message=${message}`);
+        let message = "Xác nhận email thất bại";
+        res.redirect(`/employee/verified?error=true&message=${message}`);
     }
 });
 exports.verifyEmail = verifyEmail;
 const verified = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        res.sendFile(path_1.default.join(__dirname, "./../views/verified.html"));
+        res.sendFile(`${default_constant_1.staticFolder}views/verified.html`);
     }
     catch (error) {
         console.log(error);

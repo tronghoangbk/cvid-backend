@@ -13,12 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createMany = exports.getAll = void 0;
-const industry_model_1 = __importDefault(require("../models/industry.model"));
+const companytype_model_1 = __importDefault(require("../models/companytype.model"));
 const model_service_1 = require("../services/model.service");
 const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const jobTitles = yield (0, model_service_1.findManyService)(industry_model_1.default, {});
-        res.status(200).json({ data: jobTitles, message: "Get all job titles successfully" });
+        const typeCompanies = yield (0, model_service_1.findManyService)(companytype_model_1.default, {});
+        res.status(200).json({ data: typeCompanies, message: "Get all type companies successfully" });
     }
     catch (error) {
         res.status(500).json({ message: "Something went wrong" });
@@ -29,9 +29,9 @@ const createMany = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const { data } = req.body;
         yield Promise.all(data.map((item) => __awaiter(void 0, void 0, void 0, function* () {
-            yield (0, model_service_1.createService)(industry_model_1.default, item);
+            yield (0, model_service_1.createService)(companytype_model_1.default, item);
         })));
-        res.status(200).json({ message: "Create job titles successfully" });
+        res.status(200).json({ message: "Create type companies successfully" });
     }
     catch (error) {
         res.status(500).json({ message: "Something went wrong" });
