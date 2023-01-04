@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import EmployeeModal from "../models/employee.model";
-import path from "path";
 import {
 	createService,
 	findOneService,
@@ -19,7 +18,7 @@ const login = async (req: Request, res: Response) => {
 	try {
 		const { username, password } = req.body;
 		const user = await findOneService(EmployeeModal, { username: username });
-		if (!user) return res.status(404).json({ message: errorResponse["PHONE_NOT_FOUND"] });
+		if (!user) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
 		const isPasswordCorrect = comparePassword(password, user.password);
 		if (!isPasswordCorrect) return res.status(401).json({ message: errorResponse["INVALID_PASSWORD"] });
 		if (!user.confirmEmail) return res.status(403).json({ message: errorResponse["USER_NOT_CONFIRMED"] });
@@ -117,10 +116,10 @@ const verifyEmail = async (req: Request, res: Response) => {
 	try {
 		const id = req.params.id;
 		await updateOneService(EmployeeModal, { _id: id }, { confirmEmail: true });
-		let message = "Confirm email successfully";
+		let message = "Xác nhận email thành công";
 		res.redirect(`/employee/verified?message=${message}`);
 	} catch (error: any) {
-		let message = "Confirm email failed";
+		let message = "Xác nhận email thất bại";
 		res.redirect(`/employee/verified?error=true&message=${message}`);
 	}
 };

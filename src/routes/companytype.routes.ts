@@ -1,5 +1,5 @@
 import express from "express";
-import { getAll, createMany } from "../controllers/businessType.controller";
+import { getAll, createMany } from "../controllers/companyType.controller";
 const Router = express.Router();
 
 Router.get("/getall", getAll);

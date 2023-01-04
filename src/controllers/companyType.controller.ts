@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import TypeCompanyModal from "../models/businesstype.model";
+import TypeCompanyModal from "../models/companytype.model";
 import {
 	createService,
 	findOneService,
@@ -11,7 +11,7 @@ import {
 const getAll = async (req: Request, res: Response) => {
 	try {
 		const typeCompanies = await findManyService(TypeCompanyModal, {});
-		res.status(200).json({ typeCompanies: typeCompanies, message: "Get all type companies successfully" });
+		res.status(200).json({ data: typeCompanies, message: "Get all type companies successfully" });
 	} catch (error: any) {
 		res.status(500).json({ message: "Something went wrong" });
 	}
