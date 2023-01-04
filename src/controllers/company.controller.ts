@@ -40,9 +40,11 @@ export const register = async (req: Request, res: Response) => {
 	try {
 		const newUser = req.body;
 		let userInfo = await findOneService(CompanyModal, { username: newUser.username });
-		if (userInfo) return res.status(400).json({ message: errorResponse["PHONE_EXISTS"] });
+		if (userInfo) return res.status(400).json({ message: errorResponse["TAXCODE_EXISTS"] });
 		userInfo = await findOneService(CompanyModal, { email: newUser.email });
 		if (userInfo) return res.status(400).json({ message: errorResponse["EMAIL_EXISTS"] });
+        userInfo = await findOneService(CompanyModal, { phone: newUser.phone });
+        if (userInfo) return res.status(400).json({ message: errorResponse["PHONE_EXISTS"] });
 		newUser.password = hashPassword(newUser.password);
 		const user = await createService(CompanyModal, newUser);
 		// Send email

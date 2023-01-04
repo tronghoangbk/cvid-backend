@@ -32,7 +32,7 @@ const employees = new Schema(
 			note: { type: String },
 		},
 		confirm2: {
-			confirmed: { type: Boolean, default: false },
+			confirmed: { type: Number, default: 0 },
 			confirmDate: { type: Date, default: Date.now },
 			confirmBy: { type: Schema.Types.ObjectId },
 			note: { type: String },

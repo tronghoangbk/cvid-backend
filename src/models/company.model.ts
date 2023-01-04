@@ -1,21 +1,25 @@
 import mongoose from "mongoose";
-
+import AdminModel from "./admin.model";
 const Schema = mongoose.Schema;
 
 const companies = new Schema(
 	{
 		username: { type: String, required: true, unique: true },
 		companyName: { type: String, required: true },
-		companySize: { type: String },
+		businessLicense: { type: String, required: true},
 		companyType: { type: String },
+		engName: { type: String },
+		sortName: { type: String },
+		mainIndustry: { type: String },
+		original: { type: String },
+		field: { type: Array },
 		country: { type: String },
-		province: { type: String },
-		district: { type: String },
-		ward: { type: String },
 		address: { type: String },
+		name: { type: String },
 		phone: { type: String },
 		email: { type: String, required: true, unique: true },
-		avatar: { type: String, default: "default.png" },
+		position: { type: String },
+		password: { type: String, required: true },
 		confirmPhone: { type: Boolean, default: false },
 		confirmEmail: { type: Boolean, default: false },
 		confirmIdentity: { type: Boolean, default: false },
@@ -36,5 +40,19 @@ const companies = new Schema(
 		timestamps: true,
 	},
 );
+
+companies.virtual("adminConfirm1", {
+	ref: AdminModel,
+	localField: "confirm1.confirmBy",
+	foreignField: "_id",
+	justOne: true, // for many-to-1 relationships
+});
+
+companies.virtual("adminConfirm2", {
+	ref: AdminModel,
+	localField: "confirm2.confirmBy",
+	foreignField: "_id",
+	justOne: true, // for many-to-1 relationships
+});
 
 export default mongoose.model("company", companies);
