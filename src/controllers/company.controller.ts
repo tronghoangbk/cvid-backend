@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import DomParser from "dom-parser";
 import CompanyModal from "../models/company.model";
+import { v4 as uuidv4 } from "uuid";
+
 import path from "path";
 import {
 	createService,
@@ -8,6 +10,7 @@ import {
 	findManyService,
 	updateOneService,
 	deleteOneService,
+	countService,
 } from "../services/model.service";
 import { sendEmail } from "../services/mail.service";
 import { errorResponse } from "../constant/errorResponse.constant";
@@ -169,14 +172,25 @@ export const createDepartment = async (req: Request, res: Response) => {
 		const user = await findOneService(CompanyModal, { _id: id });
 		if (!user) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
 		const { departmentName, managerName, managerEmail } = req.body;
-		let newDepartment = removeUndefinedOfObj({
+		let key = uuidv4();
+		let newDepartment = {
 			departmentName,
 			managerName,
 			managerEmail,
-		});
-
+			key,
+		};
 		const newUser = await updateOneService(CompanyModal, { _id: id }, { $push: { departments: newDepartment } });
 		res.status(200).json(newDepartment);
+	} catch (error: any) {
+		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
+	}
+};
+// Lấy số lượng công ty đã tạo
+
+export const getCompanyCount = async (req: Request, res: Response) => {
+	try {
+		const count = await countService(CompanyModal, {});
+		res.status(200).json(count);
 	} catch (error: any) {
 		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
 	}

@@ -95,6 +95,17 @@ const deleteManyService = async (model: any, objQuery: object) => {
 	}
 };
 
+const countService = async (model: any, objQuery: object) => {
+	try {
+		objQuery = removeUndefinedOfObj(objQuery);
+		const result = await model.countDocuments(objQuery);
+		return result;
+	} catch (error: any) {
+		console.log(error.message);
+		throw error;
+	}
+};
+
 export {
 	createObjIdService,
 	createService,
@@ -105,4 +116,5 @@ export {
 	updateManyService,
 	deleteOneService,
 	deleteManyService,
+	countService,
 };

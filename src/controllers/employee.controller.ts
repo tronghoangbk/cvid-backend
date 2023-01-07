@@ -6,6 +6,7 @@ import {
 	findManyService,
 	updateOneService,
 	deleteOneService,
+	countService
 } from "../services/model.service";
 import { sendEmail } from "../services/mail.service";
 import { errorResponse } from "../constant/errorResponse.constant";
@@ -133,6 +134,15 @@ const verified = async (req: Request, res: Response) => {
 	}
 };
 
+const getEmployeeCount = async (req: Request, res: Response) => {
+	try {
+		const count = await countService(EmployeeModal, {});
+		res.status(200).json(count);
+	} catch (error: any) {
+		res.status(500).json({ message: "Something went wrong" });
+	}
+};
+
 export {
 	login,
 	register,
@@ -143,5 +153,6 @@ export {
 	deleteEmployee,
 	verifyEmail,
 	verified,
-	getMyReSume
+	getMyReSume,
+	getEmployeeCount,
 };

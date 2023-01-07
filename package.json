@@ -42,6 +42,7 @@
     "@types/dom-parser": "^0.1.1",
     "@types/jsonwebtoken": "^8.5.8",
     "@types/nodemailer": "^6.4.7",
+    "@types/uuid": "^9.0.0",
     "abi-decoder": "^2.4.0",
     "axios": "^0.25.0",
     "bcryptjs": "^2.4.3",
@@ -69,7 +70,8 @@
     "path": "^0.12.7",
     "sharp": "^0.30.4",
     "socket.io": "^4.4.1",
-    "unix-timestamp": "^0.2.0"
+    "unix-timestamp": "^0.2.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",

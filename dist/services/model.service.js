@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteManyService = exports.deleteOneService = exports.updateManyService = exports.updateOneService = exports.findManyService = exports.findOneService = exports.createManyService = exports.createService = exports.createObjIdService = void 0;
+exports.countService = exports.deleteManyService = exports.deleteOneService = exports.updateManyService = exports.updateOneService = exports.findManyService = exports.findOneService = exports.createManyService = exports.createService = exports.createObjIdService = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const other_service_1 = require("./other.service");
 const createObjIdService = (id) => {
@@ -117,3 +117,15 @@ const deleteManyService = (model, objQuery) => __awaiter(void 0, void 0, void 0,
     }
 });
 exports.deleteManyService = deleteManyService;
+const countService = (model, objQuery) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        objQuery = (0, other_service_1.removeUndefinedOfObj)(objQuery);
+        const result = yield model.countDocuments(objQuery);
+        return result;
+    }
+    catch (error) {
+        console.log(error.message);
+        throw error;
+    }
+});
+exports.countService = countService;

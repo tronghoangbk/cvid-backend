@@ -12,9 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createDepartment = exports.getInfoCompanyFromUri = exports.updateCompany = exports.getCompanyById = exports.getAllCompany = exports.verified = exports.verifyEmail = exports.getMyCompanyInfo = exports.register = exports.login = void 0;
+exports.getCompanyCount = exports.createDepartment = exports.getInfoCompanyFromUri = exports.updateCompany = exports.getCompanyById = exports.getAllCompany = exports.verified = exports.verifyEmail = exports.getMyCompanyInfo = exports.register = exports.login = void 0;
 const dom_parser_1 = __importDefault(require("dom-parser"));
 const company_model_1 = __importDefault(require("../models/company.model"));
+const uuid_1 = require("uuid");
 const model_service_1 = require("../services/model.service");
 const mail_service_1 = require("../services/mail.service");
 const errorResponse_constant_1 = require("../constant/errorResponse.constant");
@@ -199,11 +200,13 @@ const createDepartment = (req, res) => __awaiter(void 0, void 0, void 0, functio
         if (!user)
             return res.status(404).json({ message: errorResponse_constant_1.errorResponse["USER_NOT_FOUND"] });
         const { departmentName, managerName, managerEmail } = req.body;
-        let newDepartment = (0, other_service_1.removeUndefinedOfObj)({
+        let key = (0, uuid_1.v4)();
+        let newDepartment = {
             departmentName,
             managerName,
             managerEmail,
-        });
+            key,
+        };
         const newUser = yield (0, model_service_1.updateOneService)(company_model_1.default, { _id: id }, { $push: { departments: newDepartment } });
         res.status(200).json(newDepartment);
     }
@@ -212,3 +215,14 @@ const createDepartment = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.createDepartment = createDepartment;
+// Lấy số lượng công ty đã tạo
+const getCompanyCount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const count = yield (0, model_service_1.countService)(company_model_1.default, {});
+        res.status(200).json(count);
+    }
+    catch (error) {
+        res.status(500).json({ message: errorResponse_constant_1.errorResponse["SERVER_ERROR"] });
+    }
+});
+exports.getCompanyCount = getCompanyCount;

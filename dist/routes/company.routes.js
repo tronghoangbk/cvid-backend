@@ -20,6 +20,7 @@ Router.get("/get-by-id", company_controller_1.getCompanyById);
 Router.get('/get-info-by-mst/:id', company_controller_1.getInfoCompanyFromUri);
 Router.get("/get-my-info", other_middleware_1.checkLogin, company_controller_1.getMyCompanyInfo);
 Router.post("/create-department/:id", company_controller_1.createDepartment);
+Router.get("/get-count", company_controller_1.getCompanyCount);
 Router.get("/update");
 Router.get("/delete");
 exports.default = Router;

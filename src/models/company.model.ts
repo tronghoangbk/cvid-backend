@@ -26,7 +26,8 @@ const companies = new Schema(
 		password: { type: String, required: true },
 		departments: { type: 
 			Array<{
-				departmentName: { type: String, required: true },
+				departmentName: { type: String, required: true, unique: true },
+				key: { type: String, required: true, unique: true },
 				managerName: { type: String },
 				managerEmail: { type: String },
 				departmentAddress: { type: String },

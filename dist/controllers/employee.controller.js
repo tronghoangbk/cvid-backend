@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMyReSume = exports.verified = exports.verifyEmail = exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getAllEmployee = exports.createCV = exports.register = exports.login = void 0;
+exports.getEmployeeCount = exports.getMyReSume = exports.verified = exports.verifyEmail = exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getAllEmployee = exports.createCV = exports.register = exports.login = void 0;
 const employee_model_1 = __importDefault(require("../models/employee.model"));
 const model_service_1 = require("../services/model.service");
 const mail_service_1 = require("../services/mail.service");
@@ -155,3 +155,13 @@ const verified = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.verified = verified;
+const getEmployeeCount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const count = yield (0, model_service_1.countService)(employee_model_1.default, {});
+        res.status(200).json(count);
+    }
+    catch (error) {
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
+exports.getEmployeeCount = getEmployeeCount;
