@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const company_controller_1 = require("../controllers/company.controller");
+const other_middleware_1 = require("../middleware/other.middleware");
 const Router = express_1.default.Router();
 Router.post("/register", company_controller_1.register);
 Router.post("/login", company_controller_1.login);
@@ -17,6 +18,8 @@ Router.get("/change-password");
 Router.get("/get-all", company_controller_1.getAllCompany);
 Router.get("/get-by-id", company_controller_1.getCompanyById);
 Router.get('/get-info-by-mst/:id', company_controller_1.getInfoCompanyFromUri);
+Router.get("/get-my-info", other_middleware_1.checkLogin, company_controller_1.getMyCompanyInfo);
+Router.post("/create-department/:id", company_controller_1.createDepartment);
 Router.get("/update");
 Router.get("/delete");
 exports.default = Router;

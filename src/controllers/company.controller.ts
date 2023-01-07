@@ -43,8 +43,8 @@ export const register = async (req: Request, res: Response) => {
 		if (userInfo) return res.status(400).json({ message: errorResponse["TAXCODE_EXISTS"] });
 		userInfo = await findOneService(CompanyModal, { email: newUser.email });
 		if (userInfo) return res.status(400).json({ message: errorResponse["EMAIL_EXISTS"] });
-        userInfo = await findOneService(CompanyModal, { phone: newUser.phone });
-        if (userInfo) return res.status(400).json({ message: errorResponse["PHONE_EXISTS"] });
+		userInfo = await findOneService(CompanyModal, { phone: newUser.phone });
+		if (userInfo) return res.status(400).json({ message: errorResponse["PHONE_EXISTS"] });
 		newUser.password = hashPassword(newUser.password);
 		const user = await createService(CompanyModal, newUser);
 		// Send email
@@ -54,6 +54,18 @@ export const register = async (req: Request, res: Response) => {
 		html = html.replace("{{link}}", link);
 		await sendEmail(user.email, subject, html);
 		res.status(200).json({ message: "Register successfully" });
+	} catch (error: any) {
+		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
+	}
+};
+
+export const getMyCompanyInfo = async (req: Request, res: Response) => {
+	try {
+		let userId = req.body.user.id;
+		const user = await findOneService(CompanyModal, { _id: userId });
+		if (!user) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
+		delete user.password;
+		res.status(200).json(user);
 	} catch (error: any) {
 		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
 	}
@@ -124,32 +136,48 @@ export const getInfoCompanyFromUri = async (req: Request, res: Response) => {
 		let htmlStr = await getDataFromURL(url);
 		const parser = new DomParser();
 		const document = parser.parseFromString(htmlStr);
-		let result: any = document.getElementsByClassName("copy");
-		if (!result.length) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
-		let CompanyInfo =
-			result.length === 8
-				? {
-						name: result[0]?.textContent,
-						engName: result[1]?.textContent,
-						sortName: result[2]?.textContent,
-						taxCode: result[3]?.textContent,
-						address: result[4]?.textContent,
-						phone: result[5]?.textContent,
-						opening: result[6]?.textContent,
-						original: result[7]?.textContent,
-				  }
-				: {
-						name: result[0]?.textContent,
-						taxCode: result[1]?.textContent,
-						address: result[2]?.textContent,
-						phone: result[3]?.textContent,
-						opening: result[4]?.textContent,
-                        original: result[5]?.textContent,
-				  };
-
+		let result: any = document.getElementsByClassName("table-taxinfo");
+		let CompanyInfo: any = {};
+		let thead = result[0].getElementsByTagName("thead");
+		CompanyInfo.companyName = thead[0].getElementsByTagName("th")[0].textContent;
+		let tbody = result[0].getElementsByTagName("tbody");
+		result = tbody[0].getElementsByTagName("tr");
+		// CompanyInfo.name = tbody[0].getElementsByTagName("th")[0].textContent;
+		result.forEach((item: any) => {
+			item = item.getElementsByTagName("td");
+			if (item[0].textContent.trim() === "Tên quốc tế") CompanyInfo.engName = item[1].textContent;
+			if (item[0].textContent.trim() === "Tên viết tắt") CompanyInfo.sortName = item[1].textContent;
+			if (item[0].textContent.trim() === "Mã số thuế") CompanyInfo.taxCode = item[1].textContent;
+			if (item[0].textContent.trim() === "Địa chỉ") CompanyInfo.address = item[1].textContent;
+			if (item[0].textContent.trim() === "Điện thoại") CompanyInfo.companyPhone = item[1].textContent;
+			if (item[0].textContent.trim() === "Ngày hoạt động") CompanyInfo.openDate = item[1].textContent;
+			if (item[0].textContent.trim() === "Người đại diện") CompanyInfo.representative = item[1].textContent;
+			if (item[0].textContent.trim() === "Quản lý bởi") CompanyInfo.managedBy = item[1].textContent;
+			if (item[0].textContent.trim() === "Tình trạng") CompanyInfo.status = item[1].textContent;
+			if (item[0].textContent.trim() === "Loại hình DN") CompanyInfo.typeOfBusiness = item[1].textContent;
+		});
 		res.status(200).json(CompanyInfo);
 	} catch (error: any) {
 		console.log(error);
+		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
+	}
+};
+
+export const createDepartment = async (req: Request, res: Response) => {
+	try {
+		const { id } = req.params;
+		const user = await findOneService(CompanyModal, { _id: id });
+		if (!user) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
+		const { departmentName, managerName, managerEmail } = req.body;
+		let newDepartment = removeUndefinedOfObj({
+			departmentName,
+			managerName,
+			managerEmail,
+		});
+
+		const newUser = await updateOneService(CompanyModal, { _id: id }, { $push: { departments: newDepartment } });
+		res.status(200).json(newDepartment);
+	} catch (error: any) {
 		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
 	}
 };

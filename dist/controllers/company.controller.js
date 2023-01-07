@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getInfoCompanyFromUri = exports.updateCompany = exports.getCompanyById = exports.getAllCompany = exports.verified = exports.verifyEmail = exports.register = exports.login = void 0;
+exports.createDepartment = exports.getInfoCompanyFromUri = exports.updateCompany = exports.getCompanyById = exports.getAllCompany = exports.verified = exports.verifyEmail = exports.getMyCompanyInfo = exports.register = exports.login = void 0;
 const dom_parser_1 = __importDefault(require("dom-parser"));
 const company_model_1 = __importDefault(require("../models/company.model"));
 const model_service_1 = require("../services/model.service");
@@ -67,6 +67,20 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.register = register;
+const getMyCompanyInfo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let userId = req.body.user.id;
+        const user = yield (0, model_service_1.findOneService)(company_model_1.default, { _id: userId });
+        if (!user)
+            return res.status(404).json({ message: errorResponse_constant_1.errorResponse["USER_NOT_FOUND"] });
+        delete user.password;
+        res.status(200).json(user);
+    }
+    catch (error) {
+        res.status(500).json({ message: errorResponse_constant_1.errorResponse["SERVER_ERROR"] });
+    }
+});
+exports.getMyCompanyInfo = getMyCompanyInfo;
 const verifyEmail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
@@ -134,35 +148,42 @@ const updateCompany = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.updateCompany = updateCompany;
 const getInfoCompanyFromUri = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
     try {
         const { id } = req.params;
         let url = `https://masothue.com/Search/?q=${id}&type=auto`;
         let htmlStr = yield (0, other_service_1.getDataFromURL)(url);
         const parser = new dom_parser_1.default();
         const document = parser.parseFromString(htmlStr);
-        let result = document.getElementsByClassName("copy");
-        if (!result.length)
-            return res.status(404).json({ message: errorResponse_constant_1.errorResponse["USER_NOT_FOUND"] });
-        let CompanyInfo = result.length === 8
-            ? {
-                name: (_a = result[0]) === null || _a === void 0 ? void 0 : _a.textContent,
-                engName: (_b = result[1]) === null || _b === void 0 ? void 0 : _b.textContent,
-                sortName: (_c = result[2]) === null || _c === void 0 ? void 0 : _c.textContent,
-                taxCode: (_d = result[3]) === null || _d === void 0 ? void 0 : _d.textContent,
-                address: (_e = result[4]) === null || _e === void 0 ? void 0 : _e.textContent,
-                phone: (_f = result[5]) === null || _f === void 0 ? void 0 : _f.textContent,
-                opening: (_g = result[6]) === null || _g === void 0 ? void 0 : _g.textContent,
-                original: (_h = result[7]) === null || _h === void 0 ? void 0 : _h.textContent,
-            }
-            : {
-                name: (_j = result[0]) === null || _j === void 0 ? void 0 : _j.textContent,
-                taxCode: (_k = result[1]) === null || _k === void 0 ? void 0 : _k.textContent,
-                address: (_l = result[2]) === null || _l === void 0 ? void 0 : _l.textContent,
-                phone: (_m = result[3]) === null || _m === void 0 ? void 0 : _m.textContent,
-                opening: (_o = result[4]) === null || _o === void 0 ? void 0 : _o.textContent,
-                original: (_p = result[5]) === null || _p === void 0 ? void 0 : _p.textContent,
-            };
+        let result = document.getElementsByClassName("table-taxinfo");
+        let CompanyInfo = {};
+        let thead = result[0].getElementsByTagName("thead");
+        CompanyInfo.companyName = thead[0].getElementsByTagName("th")[0].textContent;
+        let tbody = result[0].getElementsByTagName("tbody");
+        result = tbody[0].getElementsByTagName("tr");
+        // CompanyInfo.name = tbody[0].getElementsByTagName("th")[0].textContent;
+        result.forEach((item) => {
+            item = item.getElementsByTagName("td");
+            if (item[0].textContent.trim() === "Tên quốc tế")
+                CompanyInfo.engName = item[1].textContent;
+            if (item[0].textContent.trim() === "Tên viết tắt")
+                CompanyInfo.sortName = item[1].textContent;
+            if (item[0].textContent.trim() === "Mã số thuế")
+                CompanyInfo.taxCode = item[1].textContent;
+            if (item[0].textContent.trim() === "Địa chỉ")
+                CompanyInfo.address = item[1].textContent;
+            if (item[0].textContent.trim() === "Điện thoại")
+                CompanyInfo.companyPhone = item[1].textContent;
+            if (item[0].textContent.trim() === "Ngày hoạt động")
+                CompanyInfo.openDate = item[1].textContent;
+            if (item[0].textContent.trim() === "Người đại diện")
+                CompanyInfo.representative = item[1].textContent;
+            if (item[0].textContent.trim() === "Quản lý bởi")
+                CompanyInfo.managedBy = item[1].textContent;
+            if (item[0].textContent.trim() === "Tình trạng")
+                CompanyInfo.status = item[1].textContent;
+            if (item[0].textContent.trim() === "Loại hình DN")
+                CompanyInfo.typeOfBusiness = item[1].textContent;
+        });
         res.status(200).json(CompanyInfo);
     }
     catch (error) {
@@ -171,3 +192,23 @@ const getInfoCompanyFromUri = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.getInfoCompanyFromUri = getInfoCompanyFromUri;
+const createDepartment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const user = yield (0, model_service_1.findOneService)(company_model_1.default, { _id: id });
+        if (!user)
+            return res.status(404).json({ message: errorResponse_constant_1.errorResponse["USER_NOT_FOUND"] });
+        const { departmentName, managerName, managerEmail } = req.body;
+        let newDepartment = (0, other_service_1.removeUndefinedOfObj)({
+            departmentName,
+            managerName,
+            managerEmail,
+        });
+        const newUser = yield (0, model_service_1.updateOneService)(company_model_1.default, { _id: id }, { $push: { departments: newDepartment } });
+        res.status(200).json(newDepartment);
+    }
+    catch (error) {
+        res.status(500).json({ message: errorResponse_constant_1.errorResponse["SERVER_ERROR"] });
+    }
+});
+exports.createDepartment = createDepartment;

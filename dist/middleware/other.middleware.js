@@ -20,7 +20,7 @@ const checkLogin = (req, res, next) => {
             const token = req.headers.authorization.split(" ")[1];
             const decode = (0, other_service_1.verifyToken)(token);
             req.body.user = decode;
-            console.log(decode);
+            console.log('you are logged in');
             next();
         }
     }

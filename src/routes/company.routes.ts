@@ -6,8 +6,11 @@ import {
 	verified,
 	getAllCompany,
 	getCompanyById,
-	getInfoCompanyFromUri
+	getInfoCompanyFromUri,
+	getMyCompanyInfo,
+	createDepartment,
 } from "../controllers/company.controller";
+import { checkInput, checkLogin } from "../middleware/other.middleware";
 const Router = express.Router();
 
 Router.post("/register", register);
@@ -21,6 +24,8 @@ Router.get("/change-password");
 Router.get("/get-all", getAllCompany);
 Router.get("/get-by-id", getCompanyById);
 Router.get('/get-info-by-mst/:id', getInfoCompanyFromUri);
+Router.get("/get-my-info", checkLogin, getMyCompanyInfo);
+Router.post("/create-department/:id", createDepartment);
 Router.get("/update");
 Router.get("/delete");
 

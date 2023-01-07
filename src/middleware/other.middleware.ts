@@ -18,7 +18,7 @@ const checkLogin = (req: Request, res: Response, next: NextFunction) => {
 			const token = req.headers.authorization.split(" ")[1];
 			const decode = verifyToken(token);
 			req.body.user = decode;
-            console.log(decode);
+            console.log('you are logged in');
 			next();
 		}
 	} catch (err) {
