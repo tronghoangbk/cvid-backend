@@ -43,7 +43,16 @@ const employees = new Schema(
 		skillLanguage: [{ type: Object }],
 		skillOther: [{ type: Object }],
 		skillWork: [{ type: Object }],
-		skillEducation: [{ type: Object }],
+		skillEducation: [
+			{
+				level: { type: String, required: true },
+				school: { type: String, required: true },
+				start: { type: Date },
+				end: { type: Date },
+				major: { type: String, required: true },
+				jobTitle: { type: String, required: true },
+			},
+		],
 		shortTraining: [{ type: Object }],
 	},
 	{

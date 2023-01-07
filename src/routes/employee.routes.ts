@@ -9,6 +9,8 @@ import {
 	getAllEmployee,
 	getEmployeeById,
 	getEmployeeCount,
+	addSchool,
+	deleteSchool,
 } from "../controllers/employee.controller";
 import { checkInput, checkLogin } from "../middleware/other.middleware";
 const employeeRouter = express.Router();
@@ -25,6 +27,8 @@ employeeRouter.post("/change-password");
 employeeRouter.post("/get-all", checkLogin, getAllEmployee);
 employeeRouter.post("/get-by-id", getEmployeeById);
 employeeRouter.get("/get-count", getEmployeeCount);
+employeeRouter.post("/add-school/:id", addSchool);
+employeeRouter.delete("/delete-school/:id/:schoolId", checkLogin, deleteSchool);
 employeeRouter.post("/update");
 employeeRouter.post("/delete");
 

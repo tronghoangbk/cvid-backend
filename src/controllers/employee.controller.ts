@@ -6,7 +6,7 @@ import {
 	findManyService,
 	updateOneService,
 	deleteOneService,
-	countService
+	countService,
 } from "../services/model.service";
 import { sendEmail } from "../services/mail.service";
 import { errorResponse } from "../constant/errorResponse.constant";
@@ -54,10 +54,10 @@ const register = async (req: Request, res: Response) => {
 
 const getMyReSume = async (req: Request, res: Response) => {
 	try {
-		let userId = req.body.user.id
-		let userInfo = await findOneService(employeeModel, {_id: userId})
-		delete userInfo.password
-		res.status(200).json({...userInfo})
+		let userId = req.body.user.id;
+		let userInfo = await findOneService(employeeModel, { _id: userId });
+		delete userInfo.password;
+		res.status(200).json({ ...userInfo });
 	} catch (error) {
 		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
 	}
@@ -143,6 +143,36 @@ const getEmployeeCount = async (req: Request, res: Response) => {
 	}
 };
 
+const addSchool = async (req: Request, res: Response) => {
+	try {
+		const id = req.params.id;
+		const { school, level, major, start, end, jobTitle } = req.body;
+		const newSchool = {
+			school,
+			level,
+			major,
+			start,
+			end,
+			jobTitle,
+		};
+		await updateOneService(EmployeeModal, { _id: id }, { $push: { skillEducation: newSchool } });
+		res.status(200).json({ message: "Add school successfully" });
+	} catch (error: any) {
+		res.status(500).json({ message: "Something went wrong" });
+	}
+};
+
+const deleteSchool = async (req: Request, res: Response) => {
+	try {
+		const id = req.params.id;
+		const schoolId = req.params.schoolId;
+		await updateOneService(EmployeeModal, { _id: id }, { $pull: { skillEducation: { _id: schoolId } } });
+		res.status(200).json({ message: "Delete school successfully" });
+	} catch (error: any) {
+		res.status(500).json({ message: "Something went wrong" });
+	}
+};
+
 export {
 	login,
 	register,
@@ -155,4 +185,6 @@ export {
 	verified,
 	getMyReSume,
 	getEmployeeCount,
+	addSchool,
+	deleteSchool
 };

@@ -38,7 +38,6 @@ const checkAdmin = (req: Request, res: Response, next: NextFunction) => {
                 return res.status(401).json({ auth: false, message: "Failed to authenticate token." });
             }
             req.body.user = decode;
-            console.log(decode);
             next();
         }
     } catch (err) {

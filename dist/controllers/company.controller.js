@@ -227,7 +227,6 @@ const getDepartmentByKey = (req, res) => __awaiter(void 0, void 0, void 0, funct
     try {
         const { key } = req.params;
         const company = yield (0, model_service_1.findOneService)(company_model_1.default, { "departments.key": key });
-        console.log(company);
         if (!company)
             return res.status(404).json({ message: errorResponse_constant_1.errorResponse["NOT_FOUND"] });
         const department = company.departments.find((item) => item.key === key);

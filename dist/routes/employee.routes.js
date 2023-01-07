@@ -20,6 +20,8 @@ employeeRouter.post("/change-password");
 employeeRouter.post("/get-all", other_middleware_1.checkLogin, employee_controller_1.getAllEmployee);
 employeeRouter.post("/get-by-id", employee_controller_1.getEmployeeById);
 employeeRouter.get("/get-count", employee_controller_1.getEmployeeCount);
+employeeRouter.post("/add-school/:id", employee_controller_1.addSchool);
+employeeRouter.delete("/delete-school/:id/:schoolId", other_middleware_1.checkLogin, employee_controller_1.deleteSchool);
 employeeRouter.post("/update");
 employeeRouter.post("/delete");
 exports.default = employeeRouter;

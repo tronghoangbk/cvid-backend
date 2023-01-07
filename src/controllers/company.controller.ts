@@ -197,7 +197,6 @@ export const getDepartmentByKey = async (req: Request, res: Response) => {
 	try {
 		const { key } = req.params;
 		const company = await findOneService(CompanyModal, { "departments.key": key });
-		console.log(company);
 		if (!company) return res.status(404).json({ message: errorResponse["NOT_FOUND"] });
 		const department = company.departments.find((item: any) => item.key === key);
 		res.status(200).json(department);
