@@ -5,7 +5,7 @@ import { createService, findOneService, findManyService, updateOneService, delet
 const getAll = async (req: Request, res: Response) => {
     try {
         const jobTitles = await findManyService(JobTitleModel, {});
-        res.status(200).json({ jobTitles: jobTitles, message: "Get all job titles successfully" });
+        res.status(200).json({ data: jobTitles, message: "Get all job titles successfully" });
     } catch (error: any) {
         res.status(500).json({ message: "Something went wrong" });
     }

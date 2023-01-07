@@ -18,7 +18,7 @@ const model_service_1 = require("../services/model.service");
 const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const jobTitles = yield (0, model_service_1.findManyService)(jobtitle_model_1.default, {});
-        res.status(200).json({ jobTitles: jobTitles, message: "Get all job titles successfully" });
+        res.status(200).json({ data: jobTitles, message: "Get all job titles successfully" });
     }
     catch (error) {
         res.status(500).json({ message: "Something went wrong" });

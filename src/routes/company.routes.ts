@@ -9,7 +9,10 @@ import {
 	getInfoCompanyFromUri,
 	getMyCompanyInfo,
 	createDepartment,
-	getCompanyCount
+	getCompanyCount,
+	getDepartmentByKey,
+	createJobForDepartment,
+	deleteJobForDepartment,
 } from "../controllers/company.controller";
 import { checkInput, checkLogin } from "../middleware/other.middleware";
 const Router = express.Router();
@@ -26,7 +29,10 @@ Router.get("/get-all", getAllCompany);
 Router.get("/get-by-id", getCompanyById);
 Router.get('/get-info-by-mst/:id', getInfoCompanyFromUri);
 Router.get("/get-my-info", checkLogin, getMyCompanyInfo);
+Router.get("/get-department-by-key/:key", getDepartmentByKey);
 Router.post("/create-department/:id", createDepartment);
+Router.post("/create-job-for-department/:key", createJobForDepartment);
+Router.delete("/delete-job-for-department/:key/:jobId", deleteJobForDepartment);
 Router.get("/get-count", getCompanyCount);
 Router.get("/update");
 Router.get("/delete");

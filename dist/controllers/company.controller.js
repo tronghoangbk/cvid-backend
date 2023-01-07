@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCompanyCount = exports.createDepartment = exports.getInfoCompanyFromUri = exports.updateCompany = exports.getCompanyById = exports.getAllCompany = exports.verified = exports.verifyEmail = exports.getMyCompanyInfo = exports.register = exports.login = void 0;
+exports.deleteJobForDepartment = exports.createJobForDepartment = exports.getDepartmentByKey = exports.getCompanyCount = exports.createDepartment = exports.getInfoCompanyFromUri = exports.updateCompany = exports.getCompanyById = exports.getAllCompany = exports.verified = exports.verifyEmail = exports.getMyCompanyInfo = exports.register = exports.login = void 0;
 const dom_parser_1 = __importDefault(require("dom-parser"));
 const company_model_1 = __importDefault(require("../models/company.model"));
 const uuid_1 = require("uuid");
@@ -85,9 +85,6 @@ exports.getMyCompanyInfo = getMyCompanyInfo;
 const verifyEmail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        // const user = await findOneService(CompanyModal, { _id: id });
-        // if (!user) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
-        // if (user.confirmEmail) return res.status(400).json({ message: errorResponse["USER_CONFIRMED"] });
         yield (0, model_service_1.updateOneService)(company_model_1.default, { _id: id }, { confirmEmail: true });
         let message = "Xác thực email thành công";
         res.redirect(`/company/verified?message=${message}`);
@@ -226,3 +223,64 @@ const getCompanyCount = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.getCompanyCount = getCompanyCount;
+const getDepartmentByKey = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { key } = req.params;
+        const company = yield (0, model_service_1.findOneService)(company_model_1.default, { "departments.key": key });
+        console.log(company);
+        if (!company)
+            return res.status(404).json({ message: errorResponse_constant_1.errorResponse["NOT_FOUND"] });
+        const department = company.departments.find((item) => item.key === key);
+        res.status(200).json(department);
+    }
+    catch (error) {
+        res.status(500).json({ message: errorResponse_constant_1.errorResponse["SERVER_ERROR"] });
+    }
+});
+exports.getDepartmentByKey = getDepartmentByKey;
+const createJobForDepartment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { key } = req.params;
+        const company = yield (0, model_service_1.findOneService)(company_model_1.default, { "departments.key": key });
+        if (!company)
+            return res.status(404).json({ message: errorResponse_constant_1.errorResponse["NOT_FOUND"] });
+        const department = company.departments.find((item) => item.key === key);
+        const { title, position, level, major, industry, location, workingEnvironment, experience, quantity, minSalary, maxSalary, description, } = req.body;
+        let newJob = {
+            title,
+            position,
+            level,
+            major,
+            industry,
+            location,
+            workingEnvironment,
+            experience,
+            quantity,
+            minSalary,
+            maxSalary,
+            description,
+        };
+        const newUser = yield (0, model_service_1.updateOneService)(company_model_1.default, { "departments.key": key }, { $push: { "departments.$.jobs": newJob } });
+        res.status(200).json(newJob);
+    }
+    catch (error) {
+        res.status(500).json({ message: errorResponse_constant_1.errorResponse["SERVER_ERROR"] });
+    }
+});
+exports.createJobForDepartment = createJobForDepartment;
+const deleteJobForDepartment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { key, jobId } = req.params;
+        const company = yield (0, model_service_1.findOneService)(company_model_1.default, { "departments.key": key });
+        if (!company)
+            return res.status(404).json({ message: errorResponse_constant_1.errorResponse["NOT_FOUND"] });
+        const department = company.departments.find((item) => item.key === key);
+        const job = department.jobs.find((item) => item.key === key);
+        yield (0, model_service_1.updateOneService)(company_model_1.default, { "departments.key": key }, { $pull: { "departments.$.jobs": { _id: jobId } } });
+        res.status(200).json(job);
+    }
+    catch (error) {
+        res.status(500).json({ message: errorResponse_constant_1.errorResponse["SERVER_ERROR"] });
+    }
+});
+exports.deleteJobForDepartment = deleteJobForDepartment;

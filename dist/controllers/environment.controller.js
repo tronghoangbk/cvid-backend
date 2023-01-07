@@ -13,12 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createMany = exports.getAll = void 0;
-const position_model_1 = __importDefault(require("../models/position.model"));
+const environment_model_1 = __importDefault(require("../models/environment.model"));
 const model_service_1 = require("../services/model.service");
 const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const positions = yield (0, model_service_1.findManyService)(position_model_1.default, {});
-        res.status(200).json({ data: positions, message: "Get all positions successfully" });
+        const environments = yield (0, model_service_1.findManyService)(environment_model_1.default, {});
+        res.status(200).json({ data: environments, message: "Get all environments successfully" });
     }
     catch (error) {
         res.status(500).json({ message: "Something went wrong" });
@@ -29,9 +29,9 @@ const createMany = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const { data } = req.body;
         yield Promise.all(data.map((item) => __awaiter(void 0, void 0, void 0, function* () {
-            yield (0, model_service_1.createService)(position_model_1.default, item);
+            yield (0, model_service_1.createService)(environment_model_1.default, item);
         })));
-        res.status(200).json({ message: "Create positions successfully" });
+        res.status(200).json({ message: "Create environments successfully" });
     }
     catch (error) {
         res.status(500).json({ message: "Something went wrong" });

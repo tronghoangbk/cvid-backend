@@ -11,4 +11,6 @@ export const errorResponse = {
     USER_DISABLED: "USER_DISABLED",
     SERVER_ERROR: "SERVER_ERROR",
     USER_NOT_CONFIRMED: "USER_NOT_CONFIRMED",
+
+    NOT_FOUND: "NOT_FOUND",
 }
