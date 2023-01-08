@@ -22,6 +22,8 @@ employeeRouter.post("/get-by-id", employee_controller_1.getEmployeeById);
 employeeRouter.get("/get-count", employee_controller_1.getEmployeeCount);
 employeeRouter.post("/add-school/:id", employee_controller_1.addSchool);
 employeeRouter.delete("/delete-school/:id/:schoolId", other_middleware_1.checkLogin, employee_controller_1.deleteSchool);
+employeeRouter.post("/add-short-training/:id", other_middleware_1.checkLogin, employee_controller_1.addShortTraining);
+employeeRouter.delete("/delete-short-training/:id/:shortTrainingId", other_middleware_1.checkLogin, employee_controller_1.deleteShortTraining);
 employeeRouter.post("/send-otp/:id", other_middleware_1.checkLogin, (0, express_validator_1.body)("phone").notEmpty(), other_middleware_1.checkInput, employee_controller_1.sendOTP);
 employeeRouter.post("/confirm-phone/:id", other_middleware_1.checkLogin, (0, express_validator_1.body)("otp").notEmpty(), other_middleware_1.checkInput, employee_controller_1.confirmPhone);
 employeeRouter.post("/update");

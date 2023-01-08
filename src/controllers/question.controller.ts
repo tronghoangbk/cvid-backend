@@ -11,7 +11,7 @@ import {
 const getAll = async (req: Request, res: Response) => {
 	try {
 		const questions = await findManyService(QuestionModel, {});
-		res.status(200).json({ questions: questions, message: "Get all questions successfully" });
+		res.status(200).json({ data: questions, message: "Get all questions successfully" });
 	} catch (error: any) {
 		res.status(500).json({ message: "Something went wrong" });
 	}

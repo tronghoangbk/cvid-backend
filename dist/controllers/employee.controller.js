@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.confirmPhone = exports.sendOTP = exports.deleteSchool = exports.addSchool = exports.getEmployeeCount = exports.getMyReSume = exports.verified = exports.verifyEmail = exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getAllEmployee = exports.createCV = exports.register = exports.login = void 0;
+exports.deleteShortTraining = exports.addShortTraining = exports.confirmPhone = exports.sendOTP = exports.deleteSchool = exports.addSchool = exports.getEmployeeCount = exports.getMyReSume = exports.verified = exports.verifyEmail = exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getAllEmployee = exports.createCV = exports.register = exports.login = void 0;
 const employee_model_1 = __importDefault(require("../models/employee.model"));
 const model_service_1 = require("../services/model.service");
 const mail_service_1 = require("../services/mail.service");
@@ -197,6 +197,36 @@ const deleteSchool = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.deleteSchool = deleteSchool;
+const addShortTraining = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        const { start, end, certificate, organizer } = req.body;
+        const newShortTraining = {
+            certificate,
+            start,
+            end,
+            organizer,
+        };
+        yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { $push: { shortTraining: newShortTraining } });
+        res.status(200).json({ message: "Add short training successfully" });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
+exports.addShortTraining = addShortTraining;
+const deleteShortTraining = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        const shortTrainingId = req.params.shortTrainingId;
+        yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { $pull: { shortTraining: { _id: shortTrainingId } } });
+        res.status(200).json({ message: "Delete short training successfully" });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
+exports.deleteShortTraining = deleteShortTraining;
 const sendOTP = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;

@@ -179,6 +179,34 @@ const deleteSchool = async (req: Request, res: Response) => {
 	}
 };
 
+const addShortTraining = async (req: Request, res: Response) => {
+	try {
+		const id = req.params.id;
+		const { start, end, certificate, organizer } = req.body;
+		const newShortTraining = {
+			certificate,
+			start,
+			end,
+			organizer,
+		};
+		await updateOneService(EmployeeModal, { _id: id }, { $push: { shortTraining: newShortTraining } });
+		res.status(200).json({ message: "Add short training successfully" });
+	} catch (error: any) {
+		res.status(500).json({ message: "Something went wrong" });
+	}
+};
+
+const deleteShortTraining = async (req: Request, res: Response) => {
+	try {
+		const id = req.params.id;
+		const shortTrainingId = req.params.shortTrainingId;
+		await updateOneService(EmployeeModal, { _id: id }, { $pull: { shortTraining: { _id: shortTrainingId } } });
+		res.status(200).json({ message: "Delete short training successfully" });
+	} catch (error: any) {
+		res.status(500).json({ message: "Something went wrong" });
+	}
+};
+
 const sendOTP = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
@@ -241,4 +269,6 @@ export {
 	deleteSchool,
 	sendOTP,
 	confirmPhone,
+	addShortTraining,
+	deleteShortTraining,
 };

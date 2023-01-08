@@ -54,7 +54,12 @@ const employees = new Schema(
 				jobTitle: { type: String, required: true },
 			},
 		],
-		shortTraining: [{ type: Object }],
+		shortTraining: [{
+			certificate: { type: String, required: true },
+			organizer: { type: String, required: true },
+			start: { type: Date },
+			end: { type: Date },
+		}],
 	},
 	{
 		timestamps: true,
