@@ -86,7 +86,6 @@ const verifyToken = (token) => {
     }
     catch (error) {
         console.log(error.message);
-        throw error;
     }
 };
 exports.verifyToken = verifyToken;

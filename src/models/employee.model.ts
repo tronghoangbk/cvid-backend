@@ -37,6 +37,7 @@ const employees = new Schema(
 			confirmBy: { type: Schema.Types.ObjectId },
 			note: { type: String },
 		},
+		otp: { type: String },
 		confirmIdentity: { type: Boolean, default: false },
 		pointList: [{ type: Number, default: 0 }],
 		points: { type: Number, default: 0 },

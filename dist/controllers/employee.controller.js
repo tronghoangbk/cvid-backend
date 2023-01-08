@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteSchool = exports.addSchool = exports.getEmployeeCount = exports.getMyReSume = exports.verified = exports.verifyEmail = exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getAllEmployee = exports.createCV = exports.register = exports.login = void 0;
+exports.confirmPhone = exports.sendOTP = exports.deleteSchool = exports.addSchool = exports.getEmployeeCount = exports.getMyReSume = exports.verified = exports.verifyEmail = exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getAllEmployee = exports.createCV = exports.register = exports.login = void 0;
 const employee_model_1 = __importDefault(require("../models/employee.model"));
 const model_service_1 = require("../services/model.service");
 const mail_service_1 = require("../services/mail.service");
@@ -197,3 +197,51 @@ const deleteSchool = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.deleteSchool = deleteSchool;
+const sendOTP = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const { phone } = req.body;
+        let user = yield (0, model_service_1.findOneService)(employee_model_1.default, { _id: id });
+        if (!user) {
+            return res.status(400).json({ message: errorResponse_constant_1.errorResponse["USER_NOT_FOUND"] });
+        }
+        let checkExist = yield (0, model_service_1.findOneService)(employee_model_1.default, { username: phone, _id: { $ne: id } });
+        if (checkExist) {
+            return res.status(400).json({ message: errorResponse_constant_1.errorResponse["PHONE_EXISTS"] });
+        }
+        const otp = Math.floor(100000 + Math.random() * 900000);
+        let message = `Mã OTP của bạn là ${otp}`;
+        console.log(message);
+        const token = (0, other_service_1.generateToken)({ otp, phone }, '10m');
+        yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { otp: token, username: phone });
+        res.status(200).json({ message: "Send OTP successfully" });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
+exports.sendOTP = sendOTP;
+const confirmPhone = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const { otp } = req.body;
+        let user = yield (0, model_service_1.findOneService)(employee_model_1.default, { _id: id });
+        if (!user) {
+            return res.status(400).json({ message: errorResponse_constant_1.errorResponse["USER_NOT_FOUND"] });
+        }
+        if (!user.otp) {
+            return res.status(400).json({ message: errorResponse_constant_1.errorResponse["NOT_FOUND"] });
+        }
+        const decoded = (0, other_service_1.verifyToken)(user.otp);
+        console.log(decoded.otp, otp);
+        // if (decoded.otp != otp) {
+        // 	return res.status(400).json({ message: errorResponse["OTP_INVALID"] });
+        // }
+        yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { otp: null, confirmPhone: true, username: decoded.phone });
+        res.status(200).json({ message: "Confirm phone successfully" });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
+exports.confirmPhone = confirmPhone;

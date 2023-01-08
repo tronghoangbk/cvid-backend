@@ -11,6 +11,8 @@ import {
 	getEmployeeCount,
 	addSchool,
 	deleteSchool,
+	sendOTP,
+	confirmPhone,
 } from "../controllers/employee.controller";
 import { checkInput, checkLogin } from "../middleware/other.middleware";
 const employeeRouter = express.Router();
@@ -29,6 +31,8 @@ employeeRouter.post("/get-by-id", getEmployeeById);
 employeeRouter.get("/get-count", getEmployeeCount);
 employeeRouter.post("/add-school/:id", addSchool);
 employeeRouter.delete("/delete-school/:id/:schoolId", checkLogin, deleteSchool);
+employeeRouter.post("/send-otp/:id", checkLogin, body("phone").notEmpty(), checkInput, sendOTP);
+employeeRouter.post("/confirm-phone/:id", checkLogin, body("otp").notEmpty(), checkInput, confirmPhone);
 employeeRouter.post("/update");
 employeeRouter.post("/delete");
 

@@ -13,4 +13,6 @@ export const errorResponse = {
     USER_NOT_CONFIRMED: "USER_NOT_CONFIRMED",
 
     NOT_FOUND: "NOT_FOUND",
+    OTP_INVALID: "OTP_INVALID",
+    OTP_EXPIRED: "OTP_EXPIRED",
 }

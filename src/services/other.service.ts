@@ -67,7 +67,6 @@ const verifyToken = (token: string): any => {
 		return decoded;
 	} catch (error: any) {
 		console.log(error.message);
-		throw error;
 	}
 };
 
