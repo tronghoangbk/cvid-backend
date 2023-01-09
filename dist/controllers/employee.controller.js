@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteShortTraining = exports.addShortTraining = exports.confirmPhone = exports.sendOTP = exports.deleteSchool = exports.addSchool = exports.getEmployeeCount = exports.getMyReSume = exports.verified = exports.verifyEmail = exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getAllEmployee = exports.createCV = exports.register = exports.login = void 0;
+exports.deleteWorkExperience = exports.addWorkExperience = exports.deleteShortTraining = exports.addShortTraining = exports.confirmPhone = exports.sendOTP = exports.deleteSchool = exports.addSchool = exports.getEmployeeCount = exports.getMyReSume = exports.verified = exports.verifyEmail = exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getAllEmployee = exports.createCV = exports.register = exports.login = void 0;
 const employee_model_1 = __importDefault(require("../models/employee.model"));
 const model_service_1 = require("../services/model.service");
 const mail_service_1 = require("../services/mail.service");
@@ -227,6 +227,36 @@ const deleteShortTraining = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.deleteShortTraining = deleteShortTraining;
+const addWorkExperience = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        const { start, end, company, address, leaving, process } = req.body;
+        const newWorkExperience = {
+            start,
+            end,
+            company,
+            address,
+            leaving,
+            process,
+        };
+        yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { $push: { workExperience: newWorkExperience } });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
+exports.addWorkExperience = addWorkExperience;
+const deleteWorkExperience = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id, workId } = req.params;
+        yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { $pull: { workExperience: { _id: workId } } });
+        res.status(200).json({ message: "Delete work experience successfully" });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
+exports.deleteWorkExperience = deleteWorkExperience;
 const sendOTP = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
@@ -242,7 +272,7 @@ const sendOTP = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const otp = Math.floor(100000 + Math.random() * 900000);
         let message = `Mã OTP của bạn là ${otp}`;
         console.log(message);
-        const token = (0, other_service_1.generateToken)({ otp, phone }, '10m');
+        const token = (0, other_service_1.generateToken)({ otp, phone }, "10m");
         yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { otp: token, username: phone });
         res.status(200).json({ message: "Send OTP successfully" });
     }
