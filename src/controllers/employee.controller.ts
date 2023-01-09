@@ -253,6 +253,7 @@ const confirmPhone = async (req: Request, res: Response) => {
 	}
 };
 
+
 export {
 	login,
 	register,

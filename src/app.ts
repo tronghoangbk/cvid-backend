@@ -30,9 +30,11 @@ export const runningApp = async () => {
 	app.use(express.json({limit: '5000mb'}));
 	app.use(cors(corsOptions));
 	app.use(logger("dev"));
-
 	app.use("/", APIRouter);
 
+	app.get('/favicon.ico', (req, res) => {
+		res.sendFile(path.join(__dirname, "../public/favicon.ico"));
+	});
 	server.listen(port, () => {
 		console.log(`Server is running on http://localhost:${port}`);
 	});

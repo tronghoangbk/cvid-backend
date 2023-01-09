@@ -267,3 +267,5 @@ export const deleteJobForDepartment = async (req: Request, res: Response) => {
 		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
 	}
 };
+
+
