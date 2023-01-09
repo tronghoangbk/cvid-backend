@@ -43,7 +43,16 @@ const employees = new Schema(
 		points: { type: Number, default: 0 },
 		skillLanguage: [{ type: Object }],
 		skillOther: [{ type: Object }],
-		skillWork: [{ type: Object }],
+		skillWork: [
+			{
+				company: { type: String, required: true },
+				start: { type: Date },
+				end: { type: Date },
+				address: { type: String },
+				leaving: { type: String },
+				process: { type: Array },
+			},
+		],
 		skillEducation: [
 			{
 				level: { type: String, required: true },
@@ -54,12 +63,14 @@ const employees = new Schema(
 				jobTitle: { type: String, required: true },
 			},
 		],
-		shortTraining: [{
-			certificate: { type: String, required: true },
-			organizer: { type: String, required: true },
-			start: { type: Date },
-			end: { type: Date },
-		}],
+		shortTraining: [
+			{
+				certificate: { type: String, required: true },
+				organizer: { type: String, required: true },
+				start: { type: Date },
+				end: { type: Date },
+			},
+		],
 	},
 	{
 		timestamps: true,

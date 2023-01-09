@@ -15,6 +15,8 @@ import {
 	confirmPhone,
 	addShortTraining,
 	deleteShortTraining,
+	addWorkExperience,
+	deleteWorkExperience,
 } from "../controllers/employee.controller";
 import { checkInput, checkLogin } from "../middleware/other.middleware";
 const employeeRouter = express.Router();
@@ -35,6 +37,8 @@ employeeRouter.post("/add-school/:id", addSchool);
 employeeRouter.delete("/delete-school/:id/:schoolId", checkLogin, deleteSchool);
 employeeRouter.post("/add-short-training/:id", checkLogin, addShortTraining);
 employeeRouter.delete("/delete-short-training/:id/:shortTrainingId", checkLogin, deleteShortTraining);
+employeeRouter.post("/add-work/:id", checkLogin, addWorkExperience);
+employeeRouter.delete("/delete-work/:id/:workId", checkLogin, deleteWorkExperience);
 employeeRouter.post("/send-otp/:id", checkLogin, body("phone").notEmpty(), checkInput, sendOTP);
 employeeRouter.post("/confirm-phone/:id", checkLogin, body("otp").notEmpty(), checkInput, confirmPhone);
 employeeRouter.post("/update");

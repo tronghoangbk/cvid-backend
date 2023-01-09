@@ -207,6 +207,35 @@ const deleteShortTraining = async (req: Request, res: Response) => {
 	}
 };
 
+const addWorkExperience = async (req: Request, res: Response) => {
+	try {
+		const id = req.params.id;
+		const { start, end, company, address, leaving, process } = req.body;
+		const newWorkExperience = {
+			start,
+			end,
+			company,
+			address,
+			leaving,
+			process,
+		};
+		await updateOneService(EmployeeModal, { _id: id }, { $push: { workExperience: newWorkExperience } });
+	} catch (error: any) {
+		res.status(500).json({ message: "Something went wrong" });
+	}
+};
+
+const deleteWorkExperience = async (req: Request, res: Response) => {
+	try {
+		const {id, workId} = req.params;
+		await updateOneService(EmployeeModal, { _id: id }, { $pull: { workExperience: { _id: workId } } });
+		res.status(200).json({ message: "Delete work experience successfully" });
+	} catch (error: any) {
+		res.status(500).json({ message: "Something went wrong" });
+	}
+};
+
+
 const sendOTP = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
@@ -222,7 +251,7 @@ const sendOTP = async (req: Request, res: Response) => {
 		const otp = Math.floor(100000 + Math.random() * 900000);
 		let message = `Mã OTP của bạn là ${otp}`;
 		console.log(message);
-		const token = generateToken({ otp, phone }, '10m');
+		const token = generateToken({ otp, phone }, "10m");
 		await updateOneService(EmployeeModal, { _id: id }, { otp: token, username: phone });
 		res.status(200).json({ message: "Send OTP successfully" });
 	} catch (error: any) {
@@ -253,7 +282,6 @@ const confirmPhone = async (req: Request, res: Response) => {
 	}
 };
 
-
 export {
 	login,
 	register,
@@ -272,4 +300,6 @@ export {
 	confirmPhone,
 	addShortTraining,
 	deleteShortTraining,
+	addWorkExperience,
+	deleteWorkExperience,
 };
