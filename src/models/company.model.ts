@@ -46,13 +46,13 @@ const companies = new Schema(
 						description: { type: String },
 						confirm1: {
 							confirmed: { type: Number, default: 0 },
-							confirmDate: { type: Date, default: Date.now },
+							confirmAt: { type: Date, default: Date.now },
 							confirmBy: { type: Schema.Types.ObjectId },
 							note: { type: String },
 						},
 						confirm2: {
 							confirmed: { type: Number, default: 0 },
-							confirmDate: { type: Date, default: Date.now },
+							confirmAt: { type: Date, default: Date.now },
 							confirmBy: { type: Schema.Types.ObjectId },
 							note: { type: String },
 						},
@@ -67,13 +67,13 @@ const companies = new Schema(
 		confirmIdentity: { type: Boolean, default: false },
 		confirm1: {
 			confirmed: { type: Number, default: 0 },
-			confirmDate: { type: Date, default: Date.now },
+			confirmAt: { type: Date, default: Date.now },
 			confirmBy: { type: Schema.Types.ObjectId },
 			note: { type: String },
 		},
 		confirm2: {
 			confirmed: { type: Number, default: 0 },
-			confirmDate: { type: Date, default: Date.now },
+			confirmAt: { type: Date, default: Date.now },
 			confirmBy: { type: Schema.Types.ObjectId },
 			note: { type: String },
 		},

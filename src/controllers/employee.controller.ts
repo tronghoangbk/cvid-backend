@@ -20,6 +20,8 @@ import {
 	removeUndefinedOfObj,
 } from "../services/other.service";
 import employeeModel from "../models/employee.model";
+import CompanyModal from "../models/company.model";
+import { promises } from "dns";
 
 const login = async (req: Request, res: Response) => {
 	try {
@@ -39,6 +41,11 @@ const login = async (req: Request, res: Response) => {
 const register = async (req: Request, res: Response) => {
 	try {
 		const newUser = req.body;
+		newUser.jobCriteria = {
+			// jobTitle: newUser.jobTitle,
+			province: newUser.province,
+			major: newUser.major,
+		}
 		let userInfo = await findOneService(EmployeeModal, { username: newUser.username });
 		if (userInfo) return res.status(400).json({ message: errorResponse["PHONE_EXISTS"] });
 		userInfo = await findOneService(EmployeeModal, { email: newUser.email });
@@ -83,7 +90,7 @@ const createCV = async (req: Request, res: Response) => {
 const getAllEmployee = async (req: Request, res: Response) => {
 	try {
 		const employees = await findManyService(EmployeeModal, {});
-		res.status(200).json({ employees: employees, message: "Get all employees successfully" });
+		res.status(200).json({ data: employees, message: "Get all employees successfully" });
 	} catch (error: any) {
 		res.status(500).json({ message: "Something went wrong" });
 	}
@@ -93,7 +100,7 @@ const getEmployeeById = async (req: Request, res: Response) => {
 	try {
 		const id = req.params.id;
 		const employee = await findOneService(EmployeeModal, { _id: id });
-		res.status(200).json({ employee: employee, message: "Get employee successfully" });
+		res.status(200).json(employee);
 	} catch (error: any) {
 		res.status(500).json({ message: "Something went wrong" });
 	}
@@ -210,7 +217,9 @@ const deleteShortTraining = async (req: Request, res: Response) => {
 const addWorkExperience = async (req: Request, res: Response) => {
 	try {
 		const id = req.params.id;
-		const { start, end, company, address, leaving, process } = req.body;
+		let { start, end, company, address, leaving, process } = req.body;
+		start = process[0].from;
+		end = process[process.length - 1].to;
 		const newWorkExperience = {
 			start,
 			end,
@@ -220,6 +229,7 @@ const addWorkExperience = async (req: Request, res: Response) => {
 			process,
 		};
 		await updateOneService(EmployeeModal, { _id: id }, { $push: { workExperience: newWorkExperience } });
+		res.status(200).json({ message: "Add work experience successfully" });
 	} catch (error: any) {
 		res.status(500).json({ message: "Something went wrong" });
 	}
@@ -227,14 +237,13 @@ const addWorkExperience = async (req: Request, res: Response) => {
 
 const deleteWorkExperience = async (req: Request, res: Response) => {
 	try {
-		const {id, workId} = req.params;
+		const { id, workId } = req.params;
 		await updateOneService(EmployeeModal, { _id: id }, { $pull: { workExperience: { _id: workId } } });
 		res.status(200).json({ message: "Delete work experience successfully" });
 	} catch (error: any) {
 		res.status(500).json({ message: "Something went wrong" });
 	}
 };
-
 
 const sendOTP = async (req: Request, res: Response) => {
 	try {
@@ -282,6 +291,51 @@ const confirmPhone = async (req: Request, res: Response) => {
 	}
 };
 
+const findJob = async (req: Request, res: Response) => {
+	try {
+		const { id } = req.params;
+		let jobCriteria = req.body;
+		jobCriteria = removeUndefinedOfObj(jobCriteria);
+		await updateOneService(EmployeeModal, { _id: id }, { jobCriteria });
+		console.log('jobCriteria',jobCriteria);
+		let query = {
+			companyType: jobCriteria.companyType,
+			"departments.jobs.industry": jobCriteria.industry,
+			"departments.jobs.location": jobCriteria.province,
+			"departments.jobs.major": { $all: jobCriteria.major },
+			"departments.jobs.title": jobCriteria.jobTitle,
+		};
+		let listCompany = await findManyService(CompanyModal, query);
+		let listJob:any = []
+		listCompany.forEach((company:any) => {
+			company.departments.forEach((department: any) => {
+				department.jobs.forEach((job: any) => {
+					let flag = true;
+					if (!job.major.includes(jobCriteria.major)) {
+						flag = false;
+					}
+					if (jobCriteria.province && job.location != jobCriteria.province) {
+						flag = false;
+					}
+					if (jobCriteria.industry && job.industry != jobCriteria.industry) {
+						flag = false;
+					}
+					if (jobCriteria.jobTitle && job.title != jobCriteria.jobTitle) {
+						flag = false;
+					}
+					if (flag) {
+						listJob.push(job);
+					}
+				});
+			});
+		})
+		console.log('listJob',listJob);
+		res.status(200).json({ message: "Find job successfully", data: listJob });
+	} catch (error: any) {
+		res.status(500).json({ message: "Something went wrong" });
+	}
+};
+
 export {
 	login,
 	register,
@@ -302,4 +356,5 @@ export {
 	deleteShortTraining,
 	addWorkExperience,
 	deleteWorkExperience,
+	findJob,
 };

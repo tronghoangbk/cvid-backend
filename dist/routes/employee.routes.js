@@ -17,8 +17,8 @@ employeeRouter.get("/verified", employee_controller_1.verified);
 employeeRouter.post("/forgot-password");
 employeeRouter.post("/reset-password");
 employeeRouter.post("/change-password");
-employeeRouter.post("/get-all", other_middleware_1.checkLogin, employee_controller_1.getAllEmployee);
-employeeRouter.post("/get-by-id", employee_controller_1.getEmployeeById);
+employeeRouter.get("/get-all", other_middleware_1.checkLogin, employee_controller_1.getAllEmployee);
+employeeRouter.get("/get-by-id/:id", employee_controller_1.getEmployeeById);
 employeeRouter.get("/get-count", employee_controller_1.getEmployeeCount);
 employeeRouter.post("/add-school/:id", employee_controller_1.addSchool);
 employeeRouter.delete("/delete-school/:id/:schoolId", other_middleware_1.checkLogin, employee_controller_1.deleteSchool);
@@ -28,6 +28,7 @@ employeeRouter.post("/add-work-experience/:id", other_middleware_1.checkLogin, e
 employeeRouter.delete("/delete-work-experience/:id/:workId", other_middleware_1.checkLogin, employee_controller_1.deleteWorkExperience);
 employeeRouter.post("/send-otp/:id", other_middleware_1.checkLogin, (0, express_validator_1.body)("phone").notEmpty(), other_middleware_1.checkInput, employee_controller_1.sendOTP);
 employeeRouter.post("/confirm-phone/:id", other_middleware_1.checkLogin, (0, express_validator_1.body)("otp").notEmpty(), other_middleware_1.checkInput, employee_controller_1.confirmPhone);
+employeeRouter.post("/find-job/:id", employee_controller_1.findJob);
 employeeRouter.post("/update");
 employeeRouter.post("/delete");
 exports.default = employeeRouter;

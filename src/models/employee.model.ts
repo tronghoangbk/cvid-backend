@@ -27,13 +27,13 @@ const employees = new Schema(
 		confirmEmail: { type: Boolean, default: false },
 		confirm1: {
 			confirmed: { type: Number, default: 0 },
-			confirmDate: { type: Date, default: Date.now },
+			confirmAt: { type: Date, default: Date.now },
 			confirmBy: { type: Schema.Types.ObjectId },
 			note: { type: String },
 		},
 		confirm2: {
 			confirmed: { type: Number, default: 0 },
-			confirmDate: { type: Date, default: Date.now },
+			confirmAt: { type: Date, default: Date.now },
 			confirmBy: { type: Schema.Types.ObjectId },
 			note: { type: String },
 		},
@@ -42,8 +42,20 @@ const employees = new Schema(
 		pointList: [{ type: Number, default: 0 }],
 		points: { type: Number, default: 0 },
 		skillLanguage: [{ type: Object }],
+		jobCriteria: {
+			jobTitle: { type: String, default: '' },
+			province: { type: String, default: '' },
+			district: { type: String, default: '' },
+			ward: { type: String },
+			major: { type: String, default: '' },
+			environment: { type: Array, default: [] },
+			position: { type: Array, default: [] },
+			industry: { type: String, default: '' },
+			companyType: { type: String, default: '' },
+		},
+
 		skillOther: [{ type: Object }],
-		skillWork: [
+		workExperience: [
 			{
 				company: { type: String, required: true },
 				start: { type: Date },

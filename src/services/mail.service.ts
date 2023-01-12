@@ -24,6 +24,8 @@ transporter.verify((error, success) => {
     }
 });
 
+
+
 export const sendEmail = async (to: string, subject: string, html: string) => {
     const mailOptions = {
         from: EMAIL_ADDRESS,

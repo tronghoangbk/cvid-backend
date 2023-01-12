@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteWorkExperience = exports.addWorkExperience = exports.deleteShortTraining = exports.addShortTraining = exports.confirmPhone = exports.sendOTP = exports.deleteSchool = exports.addSchool = exports.getEmployeeCount = exports.getMyReSume = exports.verified = exports.verifyEmail = exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getAllEmployee = exports.createCV = exports.register = exports.login = void 0;
+exports.findJob = exports.deleteWorkExperience = exports.addWorkExperience = exports.deleteShortTraining = exports.addShortTraining = exports.confirmPhone = exports.sendOTP = exports.deleteSchool = exports.addSchool = exports.getEmployeeCount = exports.getMyReSume = exports.verified = exports.verifyEmail = exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getAllEmployee = exports.createCV = exports.register = exports.login = void 0;
 const employee_model_1 = __importDefault(require("../models/employee.model"));
 const model_service_1 = require("../services/model.service");
 const mail_service_1 = require("../services/mail.service");
@@ -21,6 +21,7 @@ const fs_1 = __importDefault(require("fs"));
 const default_constant_1 = require("../constant/default.constant");
 const other_service_1 = require("../services/other.service");
 const employee_model_2 = __importDefault(require("../models/employee.model"));
+const company_model_1 = __importDefault(require("../models/company.model"));
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, password } = req.body;
@@ -43,6 +44,11 @@ exports.login = login;
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const newUser = req.body;
+        newUser.jobCriteria = {
+            // jobTitle: newUser.jobTitle,
+            province: newUser.province,
+            major: newUser.major,
+        };
         let userInfo = yield (0, model_service_1.findOneService)(employee_model_1.default, { username: newUser.username });
         if (userInfo)
             return res.status(400).json({ message: errorResponse_constant_1.errorResponse["PHONE_EXISTS"] });
@@ -92,7 +98,7 @@ exports.createCV = createCV;
 const getAllEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const employees = yield (0, model_service_1.findManyService)(employee_model_1.default, {});
-        res.status(200).json({ employees: employees, message: "Get all employees successfully" });
+        res.status(200).json({ data: employees, message: "Get all employees successfully" });
     }
     catch (error) {
         res.status(500).json({ message: "Something went wrong" });
@@ -103,7 +109,7 @@ const getEmployeeById = (req, res) => __awaiter(void 0, void 0, void 0, function
     try {
         const id = req.params.id;
         const employee = yield (0, model_service_1.findOneService)(employee_model_1.default, { _id: id });
-        res.status(200).json({ employee: employee, message: "Get employee successfully" });
+        res.status(200).json(employee);
     }
     catch (error) {
         res.status(500).json({ message: "Something went wrong" });
@@ -230,7 +236,9 @@ exports.deleteShortTraining = deleteShortTraining;
 const addWorkExperience = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
-        const { start, end, company, address, leaving, process } = req.body;
+        let { start, end, company, address, leaving, process } = req.body;
+        start = process[0].from;
+        end = process[process.length - 1].to;
         const newWorkExperience = {
             start,
             end,
@@ -240,6 +248,7 @@ const addWorkExperience = (req, res) => __awaiter(void 0, void 0, void 0, functi
             process,
         };
         yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { $push: { workExperience: newWorkExperience } });
+        res.status(200).json({ message: "Add work experience successfully" });
     }
     catch (error) {
         res.status(500).json({ message: "Something went wrong" });
@@ -305,3 +314,49 @@ const confirmPhone = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.confirmPhone = confirmPhone;
+const findJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        let jobCriteria = req.body;
+        jobCriteria = (0, other_service_1.removeUndefinedOfObj)(jobCriteria);
+        yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { jobCriteria });
+        console.log('jobCriteria', jobCriteria);
+        let query = {
+            companyType: jobCriteria.companyType,
+            "departments.jobs.industry": jobCriteria.industry,
+            "departments.jobs.location": jobCriteria.province,
+            "departments.jobs.major": { $all: jobCriteria.major },
+            "departments.jobs.title": jobCriteria.jobTitle,
+        };
+        let listCompany = yield (0, model_service_1.findManyService)(company_model_1.default, query);
+        let listJob = [];
+        listCompany.forEach((company) => {
+            company.departments.forEach((department) => {
+                department.jobs.forEach((job) => {
+                    let flag = true;
+                    if (!job.major.includes(jobCriteria.major)) {
+                        flag = false;
+                    }
+                    if (jobCriteria.province && job.location != jobCriteria.province) {
+                        flag = false;
+                    }
+                    if (jobCriteria.industry && job.industry != jobCriteria.industry) {
+                        flag = false;
+                    }
+                    if (jobCriteria.jobTitle && job.title != jobCriteria.jobTitle) {
+                        flag = false;
+                    }
+                    if (flag) {
+                        listJob.push(job);
+                    }
+                });
+            });
+        });
+        console.log('listJob', listJob);
+        res.status(200).json({ message: "Find job successfully", data: listJob });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
+exports.findJob = findJob;

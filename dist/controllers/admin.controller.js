@@ -30,7 +30,7 @@ const confirmResume = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             return res.status(404).json({ message: errorResponse_constant_1.errorResponse["USER_NOT_FOUND"] });
         let data = {
             confirmed: 1,
-            confirmDate: new Date(),
+            confirmAt: new Date(),
             confirmBy: id,
             note: note,
         };
@@ -60,7 +60,7 @@ const cancelConfirmResume = (req, res) => __awaiter(void 0, void 0, void 0, func
             return res.status(404).json({ message: errorResponse_constant_1.errorResponse["USER_NOT_FOUND"] });
         let data = {
             confirmed: 0,
-            confirmDate: new Date(),
+            confirmAt: new Date(),
             confirmBy: id,
             note: note,
         };

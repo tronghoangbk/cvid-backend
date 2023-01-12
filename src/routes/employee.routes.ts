@@ -17,6 +17,7 @@ import {
 	deleteShortTraining,
 	addWorkExperience,
 	deleteWorkExperience,
+	findJob
 } from "../controllers/employee.controller";
 import { checkInput, checkLogin } from "../middleware/other.middleware";
 const employeeRouter = express.Router();
@@ -30,8 +31,8 @@ employeeRouter.get("/verified", verified);
 employeeRouter.post("/forgot-password");
 employeeRouter.post("/reset-password");
 employeeRouter.post("/change-password");
-employeeRouter.post("/get-all", checkLogin, getAllEmployee);
-employeeRouter.post("/get-by-id", getEmployeeById);
+employeeRouter.get("/get-all", checkLogin, getAllEmployee);
+employeeRouter.get("/get-by-id/:id", getEmployeeById);
 employeeRouter.get("/get-count", getEmployeeCount);
 employeeRouter.post("/add-school/:id", addSchool);
 employeeRouter.delete("/delete-school/:id/:schoolId", checkLogin, deleteSchool);
@@ -41,6 +42,7 @@ employeeRouter.post("/add-work-experience/:id", checkLogin, addWorkExperience);
 employeeRouter.delete("/delete-work-experience/:id/:workId", checkLogin, deleteWorkExperience);
 employeeRouter.post("/send-otp/:id", checkLogin, body("phone").notEmpty(), checkInput, sendOTP);
 employeeRouter.post("/confirm-phone/:id", checkLogin, body("otp").notEmpty(), checkInput, confirmPhone);
+employeeRouter.post("/find-job/:id", findJob);
 employeeRouter.post("/update");
 employeeRouter.post("/delete");
 

@@ -33,7 +33,7 @@ export const confirmResume = async (req: Request, res: Response) => {
         if (!employee) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
         let data = {
             confirmed: 1,
-            confirmDate: new Date(),
+            confirmAt: new Date(),
 			confirmBy: id,
             note: note,
         }
@@ -59,7 +59,7 @@ export const cancelConfirmResume = async (req: Request, res: Response) => {
         if (!employee) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
         let data = {
             confirmed: 0,
-            confirmDate: new Date(),
+            confirmAt: new Date(),
             confirmBy: id,
             note: note,
         }
