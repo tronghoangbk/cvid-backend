@@ -57,7 +57,8 @@ const companies = new Schema(
 							note: { type: String },
 						},
 						status: { type: Boolean, default: false },
-						updateDate: { type: Date, default: Date.now },
+						createdAt: { type: Date, default: Date.now },
+						updatedAt: { type: Date, default: Date.now },
 					},
 				],
 			},
@@ -94,6 +95,20 @@ companies.virtual("adminConfirm1", {
 companies.virtual("adminConfirm2", {
 	ref: AdminModel,
 	localField: "confirm2.confirmBy",
+	foreignField: "_id",
+	justOne: true, // for many-to-1 relationships
+});
+
+companies.virtual("adminJob1", {
+	ref: AdminModel,
+	localField: "departments.jobs.confirm1.confirmBy",
+	foreignField: "_id",
+	justOne: true, // for many-to-1 relationships
+});
+
+companies.virtual("adminJob2", {
+	ref: AdminModel,
+	localField: "departments.jobs.confirm2.confirmBy",
 	foreignField: "_id",
 	justOne: true, // for many-to-1 relationships
 });

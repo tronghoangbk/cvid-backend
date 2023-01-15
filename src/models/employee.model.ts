@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import  AdminModel  from "./admin.model";
 
 const Schema = mongoose.Schema;
 
@@ -52,6 +53,7 @@ const employees = new Schema(
 			position: { type: Array, default: [] },
 			industry: { type: String, default: '' },
 			companyType: { type: String, default: '' },
+			status: { type: Boolean, default: false },
 		},
 
 		skillOther: [{ type: Object }],
@@ -63,6 +65,7 @@ const employees = new Schema(
 				address: { type: String },
 				leaving: { type: String },
 				process: { type: Array },
+				isWorking: { type: Boolean, default: true },
 			},
 		],
 		skillEducation: [
@@ -88,5 +91,19 @@ const employees = new Schema(
 		timestamps: true,
 	},
 );
+
+employees.virtual("adminConfirm1", {
+	ref: AdminModel,
+	localField: "confirm1.confirmBy",
+	foreignField: "_id",
+	justOne: true, // for many-to-1 relationships
+});
+
+employees.virtual("adminConfirm2", {
+	ref: AdminModel,
+	localField: "confirm2.confirmBy",
+	foreignField: "_id",
+	justOne: true, // for many-to-1 relationships
+});
 
 export default mongoose.model("employee", employees);

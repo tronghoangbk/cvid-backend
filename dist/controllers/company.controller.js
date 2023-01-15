@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteJobForDepartment = exports.createJobForDepartment = exports.getDepartmentByKey = exports.getCompanyCount = exports.createDepartment = exports.getInfoCompanyFromUri = exports.updateCompany = exports.getCompanyById = exports.getAllCompany = exports.verified = exports.verifyEmail = exports.getMyCompanyInfo = exports.register = exports.login = void 0;
+exports.getAllJobs = exports.deleteJobForDepartment = exports.createJobForDepartment = exports.getDepartmentByKey = exports.getCompanyCount = exports.createDepartment = exports.getInfoCompanyFromUri = exports.updateCompany = exports.getCompanyById = exports.getAllCompany = exports.verified = exports.verifyEmail = exports.getMyCompanyInfo = exports.register = exports.login = void 0;
 const dom_parser_1 = __importDefault(require("dom-parser"));
 const company_model_1 = __importDefault(require("../models/company.model"));
 const uuid_1 = require("uuid");
@@ -22,6 +22,7 @@ const errorResponse_constant_1 = require("../constant/errorResponse.constant");
 const fs_1 = __importDefault(require("fs"));
 const default_constant_1 = require("../constant/default.constant");
 const other_service_1 = require("../services/other.service");
+const admin_model_1 = __importDefault(require("../models/admin.model"));
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, password } = req.body;
@@ -107,7 +108,10 @@ const verified = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.verified = verified;
 const getAllCompany = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const users = yield (0, model_service_1.findManyService)(company_model_1.default, {});
+        const users = yield company_model_1.default.find({})
+            .lean()
+            .populate({ path: "adminConfirm1", select: "name" })
+            .populate({ path: "adminConfirm2", select: "name" });
         res.status(200).json(users);
     }
     catch (error) {
@@ -283,3 +287,36 @@ const deleteJobForDepartment = (req, res) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.deleteJobForDepartment = deleteJobForDepartment;
+const getAllJobs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let listJob = [];
+        const companies = yield company_model_1.default.find({})
+            .lean()
+            .populate({ path: "adminConfirm1", select: "name" })
+            .populate({ path: "adminConfirm2", select: "name" });
+        yield Promise.all(companies.map((item) => __awaiter(void 0, void 0, void 0, function* () {
+            yield Promise.all(item.departments.map((department) => __awaiter(void 0, void 0, void 0, function* () {
+                yield Promise.all(department.jobs.map((job) => __awaiter(void 0, void 0, void 0, function* () {
+                    job.companyName = item.companyName;
+                    job.companyId = item.username;
+                    job.departmentName = department.departmentName;
+                    if (job.confirm1.confirm !== 0) {
+                        let admin1 = yield (0, model_service_1.findOneService)(admin_model_1.default, { _id: job.confirm1.confirmBy });
+                        job.confirm1.name = admin1.name;
+                    }
+                    if (job.confirm2.confirm !== 0) {
+                        let admin2 = yield (0, model_service_1.findOneService)(admin_model_1.default, { _id: job.confirm2.confirmBy });
+                        job.confirm2.name = admin2.name;
+                    }
+                    listJob.push(job);
+                })));
+            })));
+        })));
+        res.status(200).json(listJob);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ message: errorResponse_constant_1.errorResponse["SERVER_ERROR"] });
+    }
+});
+exports.getAllJobs = getAllJobs;

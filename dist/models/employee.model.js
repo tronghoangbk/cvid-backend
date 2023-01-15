@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
+const admin_model_1 = __importDefault(require("./admin.model"));
 const Schema = mongoose_1.default.Schema;
 const employees = new Schema({
     username: { type: String, required: true, unique: true },
@@ -54,6 +55,7 @@ const employees = new Schema({
         position: { type: Array, default: [] },
         industry: { type: String, default: '' },
         companyType: { type: String, default: '' },
+        status: { type: Boolean, default: false },
     },
     skillOther: [{ type: Object }],
     workExperience: [
@@ -64,6 +66,7 @@ const employees = new Schema({
             address: { type: String },
             leaving: { type: String },
             process: { type: Array },
+            isWorking: { type: Boolean, default: true },
         },
     ],
     skillEducation: [
@@ -86,5 +89,17 @@ const employees = new Schema({
     ],
 }, {
     timestamps: true,
+});
+employees.virtual("adminConfirm1", {
+    ref: admin_model_1.default,
+    localField: "confirm1.confirmBy",
+    foreignField: "_id",
+    justOne: true, // for many-to-1 relationships
+});
+employees.virtual("adminConfirm2", {
+    ref: admin_model_1.default,
+    localField: "confirm2.confirmBy",
+    foreignField: "_id",
+    justOne: true, // for many-to-1 relationships
 });
 exports.default = mongoose_1.default.model("employee", employees);

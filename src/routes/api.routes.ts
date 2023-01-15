@@ -12,7 +12,10 @@ import industryRouter from "./industry.routes";
 import jobTitleRouter from "./jobtitle.routes";
 import positionRouter from "./position.routes";
 import provinceRouter from "./province.routes";
+import orderRouter from "./order.routes";
+import adminRouter from "./admin.routes";
 const APIRouter = express.Router();
+
 
 APIRouter.use("/static", express.static(path.join(__dirname, "../../public")));
 
@@ -26,6 +29,8 @@ APIRouter.use("/major", majorRouter);
 APIRouter.use("/company", companyRouter);
 APIRouter.use("/industry", industryRouter);
 APIRouter.use("/job-title", jobTitleRouter);
+APIRouter.use("/order", orderRouter);
 APIRouter.use("/province", provinceRouter);
+APIRouter.use("/admin", adminRouter);
 
 export default APIRouter;

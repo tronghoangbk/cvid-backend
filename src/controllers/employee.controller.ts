@@ -21,7 +21,6 @@ import {
 } from "../services/other.service";
 import employeeModel from "../models/employee.model";
 import CompanyModal from "../models/company.model";
-import { promises } from "dns";
 
 const login = async (req: Request, res: Response) => {
 	try {
@@ -45,7 +44,7 @@ const register = async (req: Request, res: Response) => {
 			// jobTitle: newUser.jobTitle,
 			province: newUser.province,
 			major: newUser.major,
-		}
+		};
 		let userInfo = await findOneService(EmployeeModal, { username: newUser.username });
 		if (userInfo) return res.status(400).json({ message: errorResponse["PHONE_EXISTS"] });
 		userInfo = await findOneService(EmployeeModal, { email: newUser.email });
@@ -89,9 +88,20 @@ const createCV = async (req: Request, res: Response) => {
 
 const getAllEmployee = async (req: Request, res: Response) => {
 	try {
-		const employees = await findManyService(EmployeeModal, {});
+		const employees: any = await EmployeeModal.find({})
+			.lean()
+			.populate({
+				path: "adminConfirm1",
+				select: "name",
+			})
+			.populate({
+				path: "adminConfirm2",
+				select: "name",
+			});
+
 		res.status(200).json({ data: employees, message: "Get all employees successfully" });
 	} catch (error: any) {
+		console.log(error);
 		res.status(500).json({ message: "Something went wrong" });
 	}
 };
@@ -296,8 +306,11 @@ const findJob = async (req: Request, res: Response) => {
 		const { id } = req.params;
 		let jobCriteria = req.body;
 		jobCriteria = removeUndefinedOfObj(jobCriteria);
-		await updateOneService(EmployeeModal, { _id: id }, { jobCriteria });
-		console.log('jobCriteria',jobCriteria);
+		let employeeInfo = await updateOneService(EmployeeModal, { _id: id }, { jobCriteria });
+		if (employeeInfo.jobCriteria.status === false) {
+			return res.status(200).json({ message: "Stop find job successfully", data: [] });
+		}
+		console.log("jobCriteria", jobCriteria);
 		let query = {
 			companyType: jobCriteria.companyType,
 			"departments.jobs.industry": jobCriteria.industry,
@@ -306,8 +319,8 @@ const findJob = async (req: Request, res: Response) => {
 			"departments.jobs.title": jobCriteria.jobTitle,
 		};
 		let listCompany = await findManyService(CompanyModal, query);
-		let listJob:any = []
-		listCompany.forEach((company:any) => {
+		let listJob: any = [];
+		listCompany.forEach((company: any) => {
 			company.departments.forEach((department: any) => {
 				department.jobs.forEach((job: any) => {
 					let flag = true;
@@ -328,10 +341,48 @@ const findJob = async (req: Request, res: Response) => {
 					}
 				});
 			});
-		})
-		console.log('listJob',listJob);
+		});
+		console.log("listJob", listJob);
 		res.status(200).json({ message: "Find job successfully", data: listJob });
 	} catch (error: any) {
+		res.status(500).json({ message: "Something went wrong" });
+	}
+};
+
+const getCountResume = async (req: Request, res: Response) => {
+	try {
+		let count = await countService(EmployeeModal, {});
+		res.status(200).json(count);
+	} catch (error: any) {
+		res.status(500).json({ message: "Something went wrong" });
+	}
+};
+
+const updatePoint = async (req: Request, res: Response) => {
+	try {
+		const { id } = req.params;
+		const { pointList } = req.body;
+		let employee = await findOneService(EmployeeModal, { _id: id });
+		if (!employee) {
+			return res.status(400).json({ message: errorResponse["USER_NOT_FOUND"] });
+		}
+		let point = 0;
+		pointList.forEach((item: any, index: number) => {
+			item = parseInt(item);
+			if (!isNaN(item) && item >= 0 && item <= 10) {
+				point += item;
+			} else {
+				pointList[index] = 0;
+			}
+		});
+		point = point / pointList.length;
+		point = Math.round(point);
+		console.log(point);
+		console.log(pointList);
+		await updateOneService(EmployeeModal, { _id: id }, { points: point, pointList: pointList });
+		res.status(200).json({ message: "Update point successfully" });
+	} catch (error: any) {
+		console.log(error);
 		res.status(500).json({ message: "Something went wrong" });
 	}
 };
@@ -357,4 +408,6 @@ export {
 	addWorkExperience,
 	deleteWorkExperience,
 	findJob,
+	getCountResume,
+	updatePoint,
 };

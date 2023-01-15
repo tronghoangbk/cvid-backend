@@ -12,6 +12,7 @@ Router.post("/login", company_controller_1.login);
 Router.get("/verify-email/:id", company_controller_1.verifyEmail);
 Router.get("/verified", company_controller_1.verified);
 Router.get("/get-all", company_controller_1.getAllCompany);
+Router.get("/get-all-job", company_controller_1.getAllJobs);
 Router.get("/get-by-id", company_controller_1.getCompanyById);
 Router.get('/get-info-by-mst/:id', company_controller_1.getInfoCompanyFromUri);
 Router.get("/get-my-info", other_middleware_1.checkLogin, company_controller_1.getMyCompanyInfo);

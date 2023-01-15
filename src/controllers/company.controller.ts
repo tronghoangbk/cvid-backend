@@ -23,6 +23,8 @@ import {
 	removeUndefinedOfObj,
 	getDataFromURL,
 } from "../services/other.service";
+import adminModel from "../models/admin.model";
+import { async } from "@firebase/util";
 
 export const login = async (req: Request, res: Response) => {
 	try {
@@ -97,7 +99,10 @@ export const verified = async (req: Request, res: Response) => {
 
 export const getAllCompany = async (req: Request, res: Response) => {
 	try {
-		const users = await findManyService(CompanyModal, {});
+		const users = await CompanyModal.find({})
+			.lean()
+			.populate({ path: "adminConfirm1", select: "name" })
+			.populate({ path: "adminConfirm2", select: "name" });
 		res.status(200).json(users);
 	} catch (error: any) {
 		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
@@ -268,4 +273,40 @@ export const deleteJobForDepartment = async (req: Request, res: Response) => {
 	}
 };
 
-
+export const getAllJobs = async (req: Request, res: Response) => {
+	try {
+		let listJob: any = [];
+		const companies = await CompanyModal.find({})
+			.lean()
+			.populate({ path: "adminConfirm1", select: "name" })
+			.populate({ path: "adminConfirm2", select: "name" });
+		await Promise.all(
+			companies.map(async (item: any) => {
+				await Promise.all(
+					item.departments.map(async (department: any) => {
+						await Promise.all(
+							department.jobs.map(async (job: any) => {
+								job.companyName = item.companyName;
+								job.companyId = item.username;
+								job.departmentName = department.departmentName;
+								if (job.confirm1.confirm !== 0) {
+									let admin1 = await findOneService(adminModel, { _id: job.confirm1.confirmBy });
+									job.confirm1.name = admin1.name;
+								}
+								if (job.confirm2.confirm !== 0) {
+									let admin2 = await findOneService(adminModel, { _id: job.confirm2.confirmBy });
+									job.confirm2.name = admin2.name;
+								}
+								listJob.push(job);
+							}),
+						);
+					}),
+				);
+			}),
+		);
+		res.status(200).json(listJob);
+	} catch (error: any) {
+		console.log(error);
+		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
+	}
+};

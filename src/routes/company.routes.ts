@@ -13,6 +13,7 @@ import {
 	getDepartmentByKey,
 	createJobForDepartment,
 	deleteJobForDepartment,
+	getAllJobs
 } from "../controllers/company.controller";
 import { checkInput, checkLogin } from "../middleware/other.middleware";
 const Router = express.Router();
@@ -22,6 +23,7 @@ Router.post("/login", login);
 Router.get("/verify-email/:id", verifyEmail);
 Router.get("/verified", verified);
 Router.get("/get-all", getAllCompany);
+Router.get("/get-all-job", getAllJobs);
 Router.get("/get-by-id", getCompanyById);
 Router.get('/get-info-by-mst/:id', getInfoCompanyFromUri);
 Router.get("/get-my-info", checkLogin, getMyCompanyInfo);

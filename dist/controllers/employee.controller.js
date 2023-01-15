@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findJob = exports.deleteWorkExperience = exports.addWorkExperience = exports.deleteShortTraining = exports.addShortTraining = exports.confirmPhone = exports.sendOTP = exports.deleteSchool = exports.addSchool = exports.getEmployeeCount = exports.getMyReSume = exports.verified = exports.verifyEmail = exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getAllEmployee = exports.createCV = exports.register = exports.login = void 0;
+exports.updatePoint = exports.getCountResume = exports.findJob = exports.deleteWorkExperience = exports.addWorkExperience = exports.deleteShortTraining = exports.addShortTraining = exports.confirmPhone = exports.sendOTP = exports.deleteSchool = exports.addSchool = exports.getEmployeeCount = exports.getMyReSume = exports.verified = exports.verifyEmail = exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getAllEmployee = exports.createCV = exports.register = exports.login = void 0;
 const employee_model_1 = __importDefault(require("../models/employee.model"));
 const model_service_1 = require("../services/model.service");
 const mail_service_1 = require("../services/mail.service");
@@ -97,10 +97,20 @@ const createCV = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.createCV = createCV;
 const getAllEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const employees = yield (0, model_service_1.findManyService)(employee_model_1.default, {});
+        const employees = yield employee_model_1.default.find({})
+            .lean()
+            .populate({
+            path: "adminConfirm1",
+            select: "name",
+        })
+            .populate({
+            path: "adminConfirm2",
+            select: "name",
+        });
         res.status(200).json({ data: employees, message: "Get all employees successfully" });
     }
     catch (error) {
+        console.log(error);
         res.status(500).json({ message: "Something went wrong" });
     }
 });
@@ -319,8 +329,11 @@ const findJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { id } = req.params;
         let jobCriteria = req.body;
         jobCriteria = (0, other_service_1.removeUndefinedOfObj)(jobCriteria);
-        yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { jobCriteria });
-        console.log('jobCriteria', jobCriteria);
+        let employeeInfo = yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { jobCriteria });
+        if (employeeInfo.jobCriteria.status === false) {
+            return res.status(200).json({ message: "Stop find job successfully", data: [] });
+        }
+        console.log("jobCriteria", jobCriteria);
         let query = {
             companyType: jobCriteria.companyType,
             "departments.jobs.industry": jobCriteria.industry,
@@ -352,7 +365,7 @@ const findJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 });
             });
         });
-        console.log('listJob', listJob);
+        console.log("listJob", listJob);
         res.status(200).json({ message: "Find job successfully", data: listJob });
     }
     catch (error) {
@@ -360,3 +373,44 @@ const findJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.findJob = findJob;
+const getCountResume = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let count = yield (0, model_service_1.countService)(employee_model_1.default, {});
+        res.status(200).json(count);
+    }
+    catch (error) {
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
+exports.getCountResume = getCountResume;
+const updatePoint = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const { pointList } = req.body;
+        let employee = yield (0, model_service_1.findOneService)(employee_model_1.default, { _id: id });
+        if (!employee) {
+            return res.status(400).json({ message: errorResponse_constant_1.errorResponse["USER_NOT_FOUND"] });
+        }
+        let point = 0;
+        pointList.forEach((item, index) => {
+            item = parseInt(item);
+            if (!isNaN(item) && item >= 0 && item <= 10) {
+                point += item;
+            }
+            else {
+                pointList[index] = 0;
+            }
+        });
+        point = point / pointList.length;
+        point = Math.round(point);
+        console.log(point);
+        console.log(pointList);
+        yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { points: point, pointList: pointList });
+        res.status(200).json({ message: "Update point successfully" });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
+exports.updatePoint = updatePoint;
