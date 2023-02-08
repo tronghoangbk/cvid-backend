@@ -1,21 +1,18 @@
 import mongoose from "mongoose";
-import CompanyModel from "./admin.model";
+import CompanyModel from "./company.model";
 import EmployeeModel from "./employee.model";
-
-
 
 const Schema = mongoose.Schema;
 const order = new Schema(
 	{
         jobId: { type: Schema.Types.ObjectId },
-        employeeId: { type: Schema.Types.ObjectId, ref: "employee" },
+        employeeId: { type: Schema.Types.ObjectId },
         sender: { type: String, enum: ["employee", "company"] },
         rating: { type: String, enum: ["A", "B", "C"] },
         comment: { type: String },
         status: { type: String, enum: ["pending", "confirmed", "rejected"], default: "pending" },
         interview: {
             date: { type: Date },
-            time: { type: String },
             address: { type: String },
             interviewer: { type: String },
             interviewerEmail: { type: String },

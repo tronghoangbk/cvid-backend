@@ -4,6 +4,6 @@ import { createOrder, getOrdersByEmployee, getOrdersByCompany } from "../control
 const orderRouter = express.Router();
 
 orderRouter.post("/create", createOrder);
-orderRouter.get("/get-order-by-employee-id/employeeId/:employeeId", getOrdersByEmployee);
+orderRouter.post("/get-order-by-employee-id/employeeId/:employeeId", getOrdersByEmployee);
 
 export default orderRouter;

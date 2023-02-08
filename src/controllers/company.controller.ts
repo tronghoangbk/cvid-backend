@@ -139,11 +139,14 @@ export const getInfoCompanyFromUri = async (req: Request, res: Response) => {
 		const { id } = req.params;
 		let url = `https://masothue.com/Search/?q=${id}&type=auto`;
 		let htmlStr = await getDataFromURL(url);
+		console.log(url);
 		const parser = new DomParser();
 		const document = parser.parseFromString(htmlStr);
 		let result: any = document.getElementsByClassName("table-taxinfo");
 		let CompanyInfo: any = {};
+		console.log(result);
 		let thead = result[0].getElementsByTagName("thead");
+		console.log(thead);
 		CompanyInfo.companyName = thead[0].getElementsByTagName("th")[0].textContent;
 		let tbody = result[0].getElementsByTagName("tbody");
 		result = tbody[0].getElementsByTagName("tr");

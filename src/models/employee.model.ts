@@ -66,6 +66,7 @@ const employees = new Schema(
 				leaving: { type: String },
 				process: { type: Array },
 				isWorking: { type: Boolean, default: true },
+				isCurrent: { type: Boolean, default: false },
 			},
 		],
 		skillEducation: [

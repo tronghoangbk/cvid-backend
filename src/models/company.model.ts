@@ -26,13 +26,13 @@ const companies = new Schema(
 		password: { type: String, required: true },
 		departments: [
 			{
-				departmentName: { type: String, required: true, unique: true },
+				departmentName: { type: String, required: true },
 				key: { type: String, required: true, unique: true },
 				managerName: { type: String },
 				managerEmail: { type: String },
 				jobs: [
 					{
-						title: { type: String, required: true, unique: true },
+						title: { type: String, required: true},
 						position: { type: String },
 						level: { type: Array },
 						major: { type: Array },

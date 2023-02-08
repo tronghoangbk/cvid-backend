@@ -227,9 +227,11 @@ const deleteShortTraining = async (req: Request, res: Response) => {
 const addWorkExperience = async (req: Request, res: Response) => {
 	try {
 		const id = req.params.id;
-		let { start, end, company, address, leaving, process } = req.body;
-		start = process[0].from;
-		end = process[process.length - 1].to;
+		let { start, end, company, address, leaving, process, isWorking, isCurrent } = req.body;
+		if (process.length > 0) {
+			start = process[0].from;
+			end = process[process.length - 1].to;
+		}
 		const newWorkExperience = {
 			start,
 			end,
@@ -237,6 +239,8 @@ const addWorkExperience = async (req: Request, res: Response) => {
 			address,
 			leaving,
 			process,
+			isCurrent,
+			isWorking,
 		};
 		await updateOneService(EmployeeModal, { _id: id }, { $push: { workExperience: newWorkExperience } });
 		res.status(200).json({ message: "Add work experience successfully" });
