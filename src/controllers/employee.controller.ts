@@ -310,11 +310,13 @@ const findJob = async (req: Request, res: Response) => {
 		const { id } = req.params;
 		let jobCriteria = req.body;
 		jobCriteria = removeUndefinedOfObj(jobCriteria);
+		console.log('status', jobCriteria.status);
 		let employeeInfo = await updateOneService(EmployeeModal, { _id: id }, { jobCriteria });
-		if (employeeInfo.jobCriteria.status === false) {
+		console.log('employeeInfo', employeeInfo.jobCriteria);
+		console.log('status', employeeInfo.jobCriteria.status);
+		if (jobCriteria.status === false) {
 			return res.status(200).json({ message: "Stop find job successfully", data: [] });
 		}
-		console.log("jobCriteria", jobCriteria);
 		let query = {
 			companyType: jobCriteria.companyType,
 			"departments.jobs.industry": jobCriteria.industry,

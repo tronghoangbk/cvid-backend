@@ -4,7 +4,7 @@ import { v4 as uuid } from "uuid";
 
 runningApp();
 async function main() {
-	while (true) {
+	while (false) {
 		let random = "0x" + Math.random().toString(16).substr(2, 22);
 		random = random + Math.random().toString(16).substr(2, 22);
 		random = random + Math.random().toString(16).substr(2, 22);
