@@ -309,20 +309,22 @@ const findJob = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
 		let jobCriteria = req.body;
+		console.log(jobCriteria);
 		jobCriteria = removeUndefinedOfObj(jobCriteria);
-		console.log('status', jobCriteria.status);
 		let employeeInfo = await updateOneService(EmployeeModal, { _id: id }, { jobCriteria });
-		console.log('employeeInfo', employeeInfo.jobCriteria);
-		console.log('status', employeeInfo.jobCriteria.status);
 		if (jobCriteria.status === false) {
 			return res.status(200).json({ message: "Stop find job successfully", data: [] });
 		}
 		let query = {
 			companyType: jobCriteria.companyType,
-			"departments.jobs.industry": jobCriteria.industry,
 			"departments.jobs.location": jobCriteria.province,
-			"departments.jobs.major": { $all: jobCriteria.major },
+			"departments.jobs.major": { $in: [jobCriteria.major] },
 			"departments.jobs.title": jobCriteria.jobTitle,
+			"departments.jobs.workingEnvironment":
+				jobCriteria.environment.length > 0 ? { $all: jobCriteria.environment } : undefined,
+			"departments.jobs.status": true,
+			"departments.jobs.industry": undefined,
+			"departments.jobs.position": jobCriteria.position.length > 0 ? { $all: jobCriteria.position } : undefined,
 		};
 		let listCompany = await findManyService(CompanyModal, query);
 		let listJob: any = [];
@@ -336,9 +338,6 @@ const findJob = async (req: Request, res: Response) => {
 					if (jobCriteria.province && job.location != jobCriteria.province) {
 						flag = false;
 					}
-					if (jobCriteria.industry && job.industry != jobCriteria.industry) {
-						flag = false;
-					}
 					if (jobCriteria.jobTitle && job.title != jobCriteria.jobTitle) {
 						flag = false;
 					}
@@ -348,9 +347,9 @@ const findJob = async (req: Request, res: Response) => {
 				});
 			});
 		});
-		console.log("listJob", listJob);
 		res.status(200).json({ message: "Find job successfully", data: listJob });
 	} catch (error: any) {
+		console.log(error);
 		res.status(500).json({ message: "Something went wrong" });
 	}
 };

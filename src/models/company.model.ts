@@ -32,7 +32,7 @@ const companies = new Schema(
 				managerEmail: { type: String },
 				jobs: [
 					{
-						title: { type: String, required: true},
+						title: { type: String, required: true },
 						position: { type: String },
 						level: { type: Array },
 						major: { type: Array },
@@ -59,6 +59,7 @@ const companies = new Schema(
 						status: { type: Boolean, default: false },
 						createdAt: { type: Date, default: Date.now },
 						updatedAt: { type: Date, default: Date.now },
+						questions: { type: Array, default: [] },
 					},
 				],
 			},

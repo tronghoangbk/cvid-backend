@@ -51,7 +51,7 @@ const employees = new Schema(
 			major: { type: String, default: '' },
 			environment: { type: Array, default: [] },
 			position: { type: Array, default: [] },
-			industry: { type: String, default: '' },
+			industry: { type: Array, default: [] },
 			companyType: { type: String, default: '' },
 			status: { type: Boolean, default: false },
 		},
