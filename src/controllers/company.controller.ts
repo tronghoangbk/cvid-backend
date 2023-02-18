@@ -58,6 +58,7 @@ export const register = async (req: Request, res: Response) => {
 		await sendEmail(user.email, subject, html);
 		res.status(200).json({ message: "Register successfully" });
 	} catch (error: any) {
+		console.log(error);
 		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
 	}
 };

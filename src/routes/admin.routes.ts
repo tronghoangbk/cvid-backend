@@ -9,6 +9,9 @@ import {
 	cancelConfirmCompany,
 	notConfirmCompany,
 	confirmJob,
+	cancelConfirmJob,
+	notConfirmJob,
+	
 } from "../controllers/admin.controller";
 import { checkLogin } from "../middleware/other.middleware";
 const Router = express.Router();
@@ -24,6 +27,11 @@ Router.post("/not-confirm-company/:id/:times", checkLogin, notConfirmCompany);
 Router.post("/confirm-job/:id/:times", checkLogin, confirmJob);
 Router.post("/cancel-confirm-job/:id/:times", checkLogin, cancelConfirmCompany);
 Router.post("/not-confirm-job/:id/:times", checkLogin, notConfirmCompany);
+
+Router.post("/confirm-job/:id/:times", checkLogin, confirmJob);
+Router.post("/cancel-confirm-job/:id/:times", checkLogin, cancelConfirmJob);
+Router.post("/not-confirm-job/:id", checkLogin, notConfirmJob);
+
 Router.get("/get-role", checkLogin, getRole);
 Router.post("/login", login);
 

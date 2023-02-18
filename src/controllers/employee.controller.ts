@@ -31,6 +31,7 @@ const login = async (req: Request, res: Response) => {
 		if (!isPasswordCorrect) return res.status(401).json({ message: errorResponse["INVALID_PASSWORD"] });
 		if (!user.confirmEmail) return res.status(403).json({ message: errorResponse["USER_NOT_CONFIRMED"] });
 		const idToken = generateToken({ id: user._id, username: user.username }, "1d");
+		delete user._doc.password;
 		res.status(200).json({ ...user._doc, idToken, expiresIn: "3600" });
 	} catch (error: any) {
 		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.confirmJob = exports.notConfirmCompany = exports.cancelConfirmCompany = exports.confirmCompany = exports.notConfirmResume = exports.login = exports.getRole = exports.cancelConfirmResume = exports.confirmResume = void 0;
+exports.notConfirmJob = exports.cancelConfirmJob = exports.confirmJob = exports.notConfirmCompany = exports.cancelConfirmCompany = exports.confirmCompany = exports.notConfirmResume = exports.login = exports.getRole = exports.cancelConfirmResume = exports.confirmResume = void 0;
 const employee_model_1 = __importDefault(require("../models/employee.model"));
 const admin_model_1 = __importDefault(require("../models/admin.model"));
 const company_model_1 = __importDefault(require("../models/company.model"));
@@ -134,7 +134,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const isMatch = yield (0, other_service_1.comparePassword)(password, admin.password);
         if (!isMatch)
             return res.status(400).json({ message: errorResponse_constant_1.errorResponse["INVALID_PASSWORD"] });
-        const token = (0, other_service_1.generateToken)({ id: admin._id, role: admin.role }, "1d");
+        const token = (0, other_service_1.generateToken)({ id: admin._id, role: "admin" }, "1d");
         res.status(200).json({ user: admin, token, message: "Login successfully" });
     }
     catch (error) {
@@ -263,3 +263,57 @@ const confirmJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.confirmJob = confirmJob;
+const cancelConfirmJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id, times } = req.params;
+        const { note } = req.body;
+        const adminId = req.body.user.id;
+        const admin = yield (0, model_service_1.findOneService)(admin_model_1.default, { _id: adminId });
+        if (!admin)
+            return res.status(404).json({ message: errorResponse_constant_1.errorResponse["USER_NOT_FOUND"] });
+        let data = {
+            confirmed: 0,
+            confirmAt: new Date(),
+            confirmBy: adminId,
+            note: note,
+        };
+        if (times === "1") {
+            let updatedJob = yield (0, model_service_1.updateOneService)(job_model_1.default, { _id: id }, { confirm1: data });
+        }
+        else if (times === "2") {
+            let updatedJob = yield (0, model_service_1.updateOneService)(job_model_1.default, { _id: id }, { confirm2: data });
+        }
+        res.status(200).json({ message: "Cancel confirm successfully" });
+    }
+    catch (error) {
+        res.status(500).json({ message: errorResponse_constant_1.errorResponse["SERVER_ERROR"] });
+    }
+});
+exports.cancelConfirmJob = cancelConfirmJob;
+const notConfirmJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id, times } = req.params;
+        const { note } = req.body;
+        const adminId = req.body.user.id;
+        const admin = yield (0, model_service_1.findOneService)(admin_model_1.default, { _id: adminId });
+        if (!admin)
+            return res.status(404).json({ message: errorResponse_constant_1.errorResponse["USER_NOT_FOUND"] });
+        let data = {
+            confirmed: -1,
+            confirmAt: new Date(),
+            confirmBy: adminId,
+            note: note,
+        };
+        if (times === "1") {
+            yield (0, model_service_1.updateOneService)(job_model_1.default, { _id: id }, { confirm1: data });
+        }
+        else if (times === "2") {
+            yield (0, model_service_1.updateOneService)(job_model_1.default, { _id: id }, { confirm2: data });
+        }
+        res.status(200).json({ message: "Not confirm successfully" });
+    }
+    catch (error) {
+        res.status(500).json({ message: errorResponse_constant_1.errorResponse["SERVER_ERROR"] });
+    }
+});
+exports.notConfirmJob = notConfirmJob;

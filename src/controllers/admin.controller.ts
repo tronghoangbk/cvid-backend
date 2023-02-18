@@ -127,7 +127,7 @@ const login = async (req: Request, res: Response) => {
 		if (!admin) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
 		const isMatch = await comparePassword(password, admin.password);
 		if (!isMatch) return res.status(400).json({ message: errorResponse["INVALID_PASSWORD"] });
-		const token = generateToken({ id: admin._id, role: admin.role }, "1d");
+		const token = generateToken({ id: admin._id, role: "admin" }, "1d");
 		res.status(200).json({ user: admin, token, message: "Login successfully" });
 	} catch (error: any) {
 		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
@@ -243,53 +243,53 @@ const confirmJob = async (req: Request, res: Response) => {
 	}
 };
 
-// const cancelConfirmJob = async (req: Request, res: Response) => {
-// 	try {
-// 		const { id, times } = req.params;
-// 		const { note } = req.body;
-// 		const adminId = req.body.user.id;
-// 		const admin = await findOneService(AdminModal, { _id: adminId });
-// 		if (!admin) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
-// 		let data = {
-// 			confirmed: 0,
-// 			confirmAt: new Date(),
-// 			confirmBy: adminId,
-// 			note: note,
-// 		};
-// 		if (times === "1") {
-// 			const updatedJob = await updateOneService(JobModal, { _id: id }, { confirm1: data });
-// 		} else if (times === "2") {
-// 			const updatedJob = await updateOneService(JobModal, { _id: id }, { confirm2: data });
-// 		}
-// 		res.status(200).json({ message: "Cancel confirm successfully" });
-// 	} catch (error: any) {
-// 		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
-// 	}
-// };
+const cancelConfirmJob = async (req: Request, res: Response) => {
+	try {
+		const { id, times } = req.params;
+		const { note } = req.body;
+		const adminId = req.body.user.id;
+		const admin = await findOneService(AdminModal, { _id: adminId });
+		if (!admin) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
+		let data = {
+			confirmed: 0,
+			confirmAt: new Date(),
+			confirmBy: adminId,
+			note: note,
+		};
+		if (times === "1") {
+			let updatedJob = await updateOneService(jobModel, { _id: id }, { confirm1: data });
+		} else if (times === "2") {
+			let updatedJob = await updateOneService(jobModel, { _id: id }, { confirm2: data });
+		}
+		res.status(200).json({ message: "Cancel confirm successfully" });
+	} catch (error: any) {
+		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
+	}
+};
 
-// const notConfirmJob = async (req: Request, res: Response) => {
-// 	try {
-// 		const { id, times } = req.params;
-// 		const { note } = req.body;
-// 		const adminId = req.body.user.id;
-// 		const admin = await findOneService(AdminModal, { _id: adminId });
-// 		if (!admin) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
-// 		let data = {
-// 			confirmed: -1,
-// 			confirmAt: new Date(),
-// 			confirmBy: adminId,
-// 			note: note,
-// 		};
-// 		if (times === "1") {
-// 			const updatedJob = await updateOneService(JobModal, { _id: id }, { confirm1: data });
-// 		} else if (times === "2") {
-// 			const updatedJob = await updateOneService(JobModal, { _id: id }, { confirm2: data });
-// 		}
-// 		res.status(200).json({ message: "Not confirm successfully" });
-// 	} catch (error: any) {
-// 		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
-// 	}
-// };
+const notConfirmJob = async (req: Request, res: Response) => {
+	try {
+		const { id, times } = req.params;
+		const { note } = req.body;
+		const adminId = req.body.user.id;
+		const admin = await findOneService(AdminModal, { _id: adminId });
+		if (!admin) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
+		let data = {
+			confirmed: -1,
+			confirmAt: new Date(),
+			confirmBy: adminId,
+			note: note,
+		};
+		if (times === "1") {
+			await updateOneService(jobModel, { _id: id }, { confirm1: data });
+		} else if (times === "2") {
+			await updateOneService(jobModel, { _id: id }, { confirm2: data });
+		}
+		res.status(200).json({ message: "Not confirm successfully" });
+	} catch (error: any) {
+		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
+	}
+};
 
 export {
 	confirmResume,
@@ -301,4 +301,6 @@ export {
 	cancelConfirmCompany,
 	notConfirmCompany,
 	confirmJob,
+	cancelConfirmJob,
+	notConfirmJob,
 };

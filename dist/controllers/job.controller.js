@@ -12,13 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createJob = exports.getJobForDepartment = exports.getAllJob = void 0;
+exports.gẹtJobDetail = exports.getEmployeeForJob = exports.createJob = exports.getJobForDepartment = exports.getAllJob = void 0;
 const job_service_1 = require("../services/job.service");
 const job_model_1 = __importDefault(require("../models/job.model"));
 const model_service_1 = require("../services/model.service");
+const employee_service_1 = require("../services/employee.service");
 const getAllJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const jobs = yield (0, job_service_1.getListJobService)({});
+        const jobs = yield (0, job_service_1.getListJobFullInfoService)({});
         res.status(200).json({ data: jobs, message: "Get all jobs successfully" });
     }
     catch (error) {
@@ -50,3 +51,40 @@ const createJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.createJob = createJob;
+const getEmployeeForJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { jobId } = req.params;
+        const { school } = req.body;
+        const jobs = yield (0, job_service_1.getOneJobService)({ _id: jobId, "confirm2.confirmed": 1 });
+        if (!jobs)
+            return res.status(404).json({ message: "Job not found" });
+        let query = {
+            "jobCriteria.jobTitle": jobs.title,
+            "confirm1.confirmed": 1,
+            "confirm2.confirmed": 1,
+            status: true,
+            major: { $in: jobs.major },
+        };
+        let list = yield (0, employee_service_1.getListEmployee)(query);
+        res.status(200).json({ data: list, message: "Get all employees successfully" });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
+exports.getEmployeeForJob = getEmployeeForJob;
+const gẹtJobDetail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const job = yield (0, job_service_1.getOneJobService)({ _id: id });
+        if (!job)
+            return res.status(404).json({ message: "Job not found" });
+        res.status(200).json({ data: job, message: "Get job detail successfully" });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
+exports.gẹtJobDetail = gẹtJobDetail;

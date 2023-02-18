@@ -43,10 +43,10 @@ const createManyService = (model, newObjects) => __awaiter(void 0, void 0, void 
     }
 });
 exports.createManyService = createManyService;
-const findOneService = (model, objQuery) => __awaiter(void 0, void 0, void 0, function* () {
+const findOneService = (model, objQuery, properties = "", hintObj = { _id: 1 }) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         objQuery = (0, other_service_1.removeUndefinedOfObj)(objQuery);
-        const result = yield model.findOne(objQuery);
+        const result = yield model.findOne(objQuery, properties).hint(hintObj);
         return result;
     }
     catch (error) {
@@ -55,10 +55,10 @@ const findOneService = (model, objQuery) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.findOneService = findOneService;
-const findManyService = (model, objQuery) => __awaiter(void 0, void 0, void 0, function* () {
+const findManyService = (model, objQuery, properties = "", sortObj = { createdAt: -1 }, limit = NaN, hintObj = { _id: 1 }) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         objQuery = (0, other_service_1.removeUndefinedOfObj)(objQuery);
-        const result = yield model.find(objQuery);
+        const result = yield model.find(objQuery, properties).sort(sortObj).limit(limit).hint(hintObj);
         return result;
     }
     catch (error) {

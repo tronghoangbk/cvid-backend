@@ -4,13 +4,13 @@ import { removeUndefinedOfObj } from "./other.service";
 
 const getOneCompanyService = async (query: object) => {
     query = removeUndefinedOfObj(query);
-    let company = await CompanyModel.findOne(query);
+    let company = await CompanyModel.findOne(query, { password: 0});
     return company;
 };
 
 const getListCompanyService = async (query: any) => {
     query = removeUndefinedOfObj(query);
-    let companies = await CompanyModel.find(query);
+    let companies = await CompanyModel.find(query, { password: 0});
     return companies;
 };
 

@@ -24,5 +24,5 @@ export interface IJob {
 	status: boolean;
 	createdAt: string;
 	updatedAt: string;
-	questions: Array<Object>;
+	questions: Array<object>;
 }

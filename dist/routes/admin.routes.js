@@ -16,6 +16,9 @@ Router.post("/not-confirm-company/:id/:times", other_middleware_1.checkLogin, ad
 Router.post("/confirm-job/:id/:times", other_middleware_1.checkLogin, admin_controller_1.confirmJob);
 Router.post("/cancel-confirm-job/:id/:times", other_middleware_1.checkLogin, admin_controller_1.cancelConfirmCompany);
 Router.post("/not-confirm-job/:id/:times", other_middleware_1.checkLogin, admin_controller_1.notConfirmCompany);
+Router.post("/confirm-job/:id/:times", other_middleware_1.checkLogin, admin_controller_1.confirmJob);
+Router.post("/cancel-confirm-job/:id/:times", other_middleware_1.checkLogin, admin_controller_1.cancelConfirmJob);
+Router.post("/not-confirm-job/:id", other_middleware_1.checkLogin, admin_controller_1.notConfirmJob);
 Router.get("/get-role", other_middleware_1.checkLogin, admin_controller_1.getRole);
 Router.post("/login", admin_controller_1.login);
 exports.default = Router;

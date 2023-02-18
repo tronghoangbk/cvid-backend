@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import departmentModel from "./department.model";
 import companyModel from "./company.model";
+import adminModel from "./admin.model";
 const Schema = mongoose.Schema;
 
 const Job = new Schema(
@@ -53,6 +54,20 @@ Job.virtual("companyInfo", {
     localField: "companyId",
     foreignField: "_id",
     justOne: true, // for many-to-1 relationships
+});
+
+Job.virtual("adminConfirm1", {
+	ref: adminModel,
+	localField: "confirm1.confirmBy",
+	foreignField: "_id",
+	justOne: true, // for many-to-1 relationships
+});
+
+Job.virtual("adminConfirm2", {
+	ref: adminModel,
+	localField: "confirm2.confirmBy",
+	foreignField: "_id",
+	justOne: true, // for many-to-1 relationships
 });
 
 export default mongoose.model("job", Job);

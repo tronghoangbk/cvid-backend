@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const department_model_1 = __importDefault(require("./department.model"));
 const company_model_1 = __importDefault(require("./company.model"));
+const admin_model_1 = __importDefault(require("./admin.model"));
 const Schema = mongoose_1.default.Schema;
 const Job = new Schema({
     companyId: { type: Schema.Types.ObjectId, ref: "company" },
@@ -50,6 +51,18 @@ Job.virtual("departmentInfo", {
 Job.virtual("companyInfo", {
     ref: company_model_1.default,
     localField: "companyId",
+    foreignField: "_id",
+    justOne: true, // for many-to-1 relationships
+});
+Job.virtual("adminConfirm1", {
+    ref: admin_model_1.default,
+    localField: "confirm1.confirmBy",
+    foreignField: "_id",
+    justOne: true, // for many-to-1 relationships
+});
+Job.virtual("adminConfirm2", {
+    ref: admin_model_1.default,
+    localField: "confirm2.confirmBy",
     foreignField: "_id",
     justOne: true, // for many-to-1 relationships
 });

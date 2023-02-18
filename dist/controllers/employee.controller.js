@@ -34,6 +34,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (!user.confirmEmail)
             return res.status(403).json({ message: errorResponse_constant_1.errorResponse["USER_NOT_CONFIRMED"] });
         const idToken = (0, other_service_1.generateToken)({ id: user._id, username: user.username }, "1d");
+        delete user._doc.password;
         res.status(200).json(Object.assign(Object.assign({}, user._doc), { idToken, expiresIn: "3600" }));
     }
     catch (error) {

@@ -17,13 +17,13 @@ const company_model_1 = __importDefault(require("../models/company.model"));
 const other_service_1 = require("./other.service");
 const getOneCompanyService = (query) => __awaiter(void 0, void 0, void 0, function* () {
     query = (0, other_service_1.removeUndefinedOfObj)(query);
-    let company = yield company_model_1.default.findOne(query);
+    let company = yield company_model_1.default.findOne(query, { password: 0 });
     return company;
 });
 exports.getOneCompanyService = getOneCompanyService;
 const getListCompanyService = (query) => __awaiter(void 0, void 0, void 0, function* () {
     query = (0, other_service_1.removeUndefinedOfObj)(query);
-    let companies = yield company_model_1.default.find(query);
+    let companies = yield company_model_1.default.find(query, { password: 0 });
     return companies;
 });
 exports.getListCompanyService = getListCompanyService;

@@ -27,10 +27,10 @@ const createManyService = async (model: any, newObjects: object[]) => {
 	}
 };
 
-const findOneService = async (model: any, objQuery: object) => {
+const findOneService = async (model: any, objQuery: object, properties: string = "", hintObj: any = { _id: 1 }) => {
 	try {
 		objQuery = removeUndefinedOfObj(objQuery);
-		const result = await model.findOne(objQuery);
+		const result = await model.findOne(objQuery, properties).hint(hintObj);
 		return result;
 	} catch (error: any) {
 		console.log(error.message);
@@ -38,10 +38,17 @@ const findOneService = async (model: any, objQuery: object) => {
 	}
 };
 
-const findManyService = async (model: any, objQuery: object) => {
+const findManyService = async (
+	model: any,
+	objQuery: object,
+	properties: string = "",
+	sortObj: object = { createdAt: -1 },
+	limit: number = NaN,
+	hintObj: any = { _id: 1 },
+) => {
 	try {
 		objQuery = removeUndefinedOfObj(objQuery);
-		const result = await model.find(objQuery);
+		const result = await model.find(objQuery, properties).sort(sortObj).limit(limit).hint(hintObj);
 		return result;
 	} catch (error: any) {
 		console.log(error.message);

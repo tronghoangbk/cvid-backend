@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
-import { getListJobService } from "../services/job.service";
+import { getListJobService, getListJobFullInfoService, getOneJobService } from "../services/job.service";
 import jobModel from "../models/job.model";
 import { createService, findManyService } from "../services/model.service";
 import { IJob } from "../interfaces/job.interface";
+import { getListEmployee } from "../services/employee.service";
 
 const getAllJob = async (req: Request, res: Response) => {
 	try {
-		const jobs = await getListJobService( {});
+		const jobs = await getListJobFullInfoService({});
 		res.status(200).json({ data: jobs, message: "Get all jobs successfully" });
 	} catch (error: any) {
 		res.status(500).json({ message: "Something went wrong" });
@@ -14,30 +15,59 @@ const getAllJob = async (req: Request, res: Response) => {
 };
 
 const getJobForDepartment = async (req: Request, res: Response) => {
-    try {
-        const { departmentId, key } = req.params;
-        const jobs = await getListJobService({ departmentId, key });
-        res.status(200).json({ data: jobs, message: "Get all jobs successfully" });
-    } catch (error: any) {
-        res.status(500).json({ message: "Something went wrong" });
-    }
+	try {
+		const { departmentId, key } = req.params;
+		const jobs = await getListJobService({ departmentId, key });
+		res.status(200).json({ data: jobs, message: "Get all jobs successfully" });
+	} catch (error: any) {
+		res.status(500).json({ message: "Something went wrong" });
+	}
 };
 
 const createJob = async (req: Request, res: Response) => {
-    try {
-        const data: IJob = req.body;
-        console.log(data);
-        const job = await createService(jobModel, data);
-        res.status(200).json({ data: job, message: "Create job successfully" });
-    } catch (error: any) {
-        console.log(error);
-        res.status(500).json({ message: "Something went wrong" });
-    }
+	try {
+		const data: IJob = req.body;
+		console.log(data);
+		const job = await createService(jobModel, data);
+		res.status(200).json({ data: job, message: "Create job successfully" });
+	} catch (error: any) {
+		console.log(error);
+		res.status(500).json({ message: "Something went wrong" });
+	}
+};
+
+const getEmployeeForJob = async (req: Request, res: Response) => {
+	try {
+		const { jobId } = req.params;
+		const { school } = req.body;
+		const jobs = await getOneJobService({ _id: jobId, "confirm2.confirmed": 1 });
+		if (!jobs) return res.status(404).json({ message: "Job not found" });
+		let query = {
+			"jobCriteria.jobTitle": jobs.title,
+			"confirm1.confirmed": 1,
+			"confirm2.confirmed": 1,
+			status: true,
+			major: { $in: jobs.major },
+		};
+		let list = await getListEmployee(query);
+		res.status(200).json({ data: list, message: "Get all employees successfully" });
+	} catch (error: any) {
+		console.log(error);
+		res.status(500).json({ message: "Something went wrong" });
+	}
+};
+
+const gẹtJobDetail = async (req: Request, res: Response) => {
+	try {
+		const { id } = req.params;
+		const job = await getOneJobService({ _id: id });
+		if (!job) return res.status(404).json({ message: "Job not found" });
+		res.status(200).json({ data: job, message: "Get job detail successfully" });
+	} catch (error: any) {
+		console.log(error);
+		res.status(500).json({ message: "Something went wrong" });
+	}
 };
 
 
-
-
-
-
-export { getAllJob, getJobForDepartment, createJob };
+export { getAllJob, getJobForDepartment, createJob, getEmployeeForJob, gẹtJobDetail };

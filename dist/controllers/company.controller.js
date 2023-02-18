@@ -63,6 +63,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json({ message: "Register successfully" });
     }
     catch (error) {
+        console.log(error);
         res.status(500).json({ message: errorResponse_constant_1.errorResponse["SERVER_ERROR"] });
     }
 });
