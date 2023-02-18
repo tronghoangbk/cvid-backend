@@ -14,6 +14,8 @@ import positionRouter from "./position.routes";
 import provinceRouter from "./province.routes";
 import orderRouter from "./order.routes";
 import adminRouter from "./admin.routes";
+import departmentRouter from "./department.routes";
+import jobRouter from "./job.routes";
 const APIRouter = express.Router();
 
 
@@ -33,4 +35,6 @@ APIRouter.use("/order", orderRouter);
 APIRouter.use("/province", provinceRouter);
 APIRouter.use("/admin", adminRouter);
 
+APIRouter.use("/department", departmentRouter);
+APIRouter.use("/job", jobRouter);
 export default APIRouter;

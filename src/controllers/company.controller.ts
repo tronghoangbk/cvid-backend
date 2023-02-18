@@ -24,8 +24,6 @@ import {
 	getDataFromURL,
 } from "../services/other.service";
 import adminModel from "../models/admin.model";
-import { async } from "@firebase/util";
-
 export const login = async (req: Request, res: Response) => {
 	try {
 		const { username, password } = req.body;
@@ -171,25 +169,7 @@ export const getInfoCompanyFromUri = async (req: Request, res: Response) => {
 	}
 };
 
-export const createDepartment = async (req: Request, res: Response) => {
-	try {
-		const { id } = req.params;
-		const user = await findOneService(CompanyModal, { _id: id });
-		if (!user) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
-		const { departmentName, managerName, managerEmail } = req.body;
-		let key = uuidv4();
-		let newDepartment = {
-			departmentName,
-			managerName,
-			managerEmail,
-			key,
-		};
-		const newUser = await updateOneService(CompanyModal, { _id: id }, { $push: { departments: newDepartment } });
-		res.status(200).json(newDepartment);
-	} catch (error: any) {
-		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
-	}
-};
+
 // Lấy số lượng công ty đã tạo
 
 export const getCompanyCount = async (req: Request, res: Response) => {
@@ -276,40 +256,3 @@ export const deleteJobForDepartment = async (req: Request, res: Response) => {
 	}
 };
 
-export const getAllJobs = async (req: Request, res: Response) => {
-	try {
-		let listJob: any = [];
-		const companies = await CompanyModal.find({})
-			.lean()
-			.populate({ path: "adminConfirm1", select: "name" })
-			.populate({ path: "adminConfirm2", select: "name" });
-		await Promise.all(
-			companies.map(async (item: any) => {
-				await Promise.all(
-					item.departments.map(async (department: any) => {
-						await Promise.all(
-							department.jobs.map(async (job: any) => {
-								job.companyName = item.companyName;
-								job.companyId = item.username;
-								job.departmentName = department.departmentName;
-								if (job.confirm1.confirm !== 0) {
-									let admin1 = await findOneService(adminModel, { _id: job.confirm1.confirmBy });
-									job.confirm1.name = admin1.name;
-								}
-								if (job.confirm2.confirm !== 0) {
-									let admin2 = await findOneService(adminModel, { _id: job.confirm2.confirmBy });
-									job.confirm2.name = admin2.name;
-								}
-								listJob.push(job);
-							}),
-						);
-					}),
-				);
-			}),
-		);
-		res.status(200).json(listJob);
-	} catch (error: any) {
-		console.log(error);
-		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
-	}
-};

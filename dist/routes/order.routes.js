@@ -7,5 +7,5 @@ const express_1 = __importDefault(require("express"));
 const order_controller_1 = require("../controllers/order.controller");
 const orderRouter = express_1.default.Router();
 orderRouter.post("/create", order_controller_1.createOrder);
-orderRouter.get("/get-order-by-employee-id/employeeId/:employeeId", order_controller_1.getOrdersByEmployee);
+orderRouter.post("/get-order-by-employee-id/employeeId/:employeeId", order_controller_1.getOrdersByEmployee);
 exports.default = orderRouter;

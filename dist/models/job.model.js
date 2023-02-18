@@ -4,41 +4,53 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
-const admin_model_1 = __importDefault(require("./admin.model"));
-const employee_model_1 = __importDefault(require("./employee.model"));
+const department_model_1 = __importDefault(require("./department.model"));
+const company_model_1 = __importDefault(require("./company.model"));
 const Schema = mongoose_1.default.Schema;
-const job = new Schema({
-    jobId: { type: Schema.Types.ObjectId },
-    employeeId: { type: Schema.Types.ObjectId, ref: "employee" },
-    sender: { type: String, enum: ["employee", "company"] },
-    interview: {
-        date: { type: Date },
-        time: { type: String },
-        address: { type: String },
-        interviewer: { type: String },
-        interviewerEmail: { type: String },
-        interviewerPhone: { type: String },
-        status: { type: String, enum: ["pending", "confirmed", "rejected"] },
+const Job = new Schema({
+    companyId: { type: Schema.Types.ObjectId, ref: "company" },
+    departmentId: { type: Schema.Types.ObjectId, ref: "department" },
+    title: { type: String, required: true },
+    position: { type: String },
+    level: { type: Array },
+    major: { type: Array },
+    industry: { type: String },
+    location: { type: String },
+    workingEnvironment: { type: String },
+    experience: { type: String },
+    quantity: { type: Number },
+    minSalary: { type: Number },
+    maxSalary: { type: Number },
+    description: { type: String },
+    confirm1: {
+        confirmed: { type: Number, default: 0 },
+        confirmAt: { type: Date, default: Date.now },
+        confirmBy: { type: Schema.Types.ObjectId },
         note: { type: String },
     },
-    payment: {
-        amount: { type: Number },
-        status: { type: String, enum: ["pending", "confirmed", "rejected"] },
+    confirm2: {
+        confirmed: { type: Number, default: 0 },
+        confirmAt: { type: Date, default: Date.now },
+        confirmBy: { type: Schema.Types.ObjectId },
         note: { type: String },
     },
+    status: { type: Boolean, default: false },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+    questions: { type: Array, default: [] },
 }, {
     timestamps: true,
 });
-job.virtual("jobInfo", {
-    ref: admin_model_1.default,
-    localField: "jobId",
-    foreignField: "departments.jobs._id",
-    justOne: true, // for many-to-1 relationships
-});
-job.virtual("employeeInfo", {
-    ref: employee_model_1.default,
-    localField: "employeeId",
+Job.virtual("departmentInfo", {
+    ref: department_model_1.default,
+    localField: "departmentId",
     foreignField: "_id",
     justOne: true, // for many-to-1 relationships
 });
-exports.default = mongoose_1.default.model("job", job);
+Job.virtual("companyInfo", {
+    ref: company_model_1.default,
+    localField: "companyId",
+    foreignField: "_id",
+    justOne: true, // for many-to-1 relationships
+});
+exports.default = mongoose_1.default.model("job", Job);

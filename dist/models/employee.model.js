@@ -53,7 +53,7 @@ const employees = new Schema({
         major: { type: String, default: '' },
         environment: { type: Array, default: [] },
         position: { type: Array, default: [] },
-        industry: { type: String, default: '' },
+        industry: { type: Array, default: [] },
         companyType: { type: String, default: '' },
         status: { type: Boolean, default: false },
     },
@@ -67,6 +67,7 @@ const employees = new Schema({
             leaving: { type: String },
             process: { type: Array },
             isWorking: { type: Boolean, default: true },
+            isCurrent: { type: Boolean, default: false },
         },
     ],
     skillEducation: [

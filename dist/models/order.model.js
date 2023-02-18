@@ -4,19 +4,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
-const admin_model_1 = __importDefault(require("./admin.model"));
+const company_model_1 = __importDefault(require("./company.model"));
 const employee_model_1 = __importDefault(require("./employee.model"));
 const Schema = mongoose_1.default.Schema;
 const order = new Schema({
     jobId: { type: Schema.Types.ObjectId },
-    employeeId: { type: Schema.Types.ObjectId, ref: "employee" },
+    employeeId: { type: Schema.Types.ObjectId },
     sender: { type: String, enum: ["employee", "company"] },
     rating: { type: String, enum: ["A", "B", "C"] },
     comment: { type: String },
     status: { type: String, enum: ["pending", "confirmed", "rejected"], default: "pending" },
     interview: {
         date: { type: Date },
-        time: { type: String },
         address: { type: String },
         interviewer: { type: String },
         interviewerEmail: { type: String },
@@ -33,7 +32,7 @@ const order = new Schema({
     timestamps: true,
 });
 order.virtual("jobInfo", {
-    ref: admin_model_1.default,
+    ref: company_model_1.default,
     localField: "jobId",
     foreignField: "departments.jobs._id",
     justOne: true, // for many-to-1 relationships

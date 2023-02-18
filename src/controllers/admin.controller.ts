@@ -22,6 +22,8 @@ import {
 	removeUndefinedOfObj,
 } from "../services/other.service";
 import employeeModel from "../models/employee.model";
+import companyModel from "../models/company.model";
+import jobModel from "../models/job.model";
 
 const confirmResume = async (req: Request, res: Response) => {
 	try {
@@ -214,4 +216,89 @@ const notConfirmCompany = async (req: Request, res: Response) => {
 	}
 };
 
-export { confirmResume, cancelConfirmResume, getRole, login, notConfirmResume, confirmCompany, cancelConfirmCompany, notConfirmCompany };
+const confirmJob = async (req: Request, res: Response) => {
+	try {
+		const { id, times } = req.params;
+		const { note } = req.body;
+		const adminId = req.body.user.id;
+		const admin = await findOneService(AdminModal, { _id: adminId });
+		if (!admin) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
+		const job = await findOneService(jobModel, { _id: id });
+		if (!job) return res.status(404).json({ message: errorResponse["NOT_FOUND"] });
+		let data = {
+			confirmed: 1,
+			confirmAt: new Date(),
+			confirmBy: adminId,
+			note: note,
+		};
+		if (times === "1") {
+			let updatedJob = await updateOneService(jobModel, { _id: id }, { confirm1: data });
+		} else if (times === "2") {
+			let updatedJob = await updateOneService(jobModel, { _id: id, "confirm1.confirmed": 1 }, { confirm2: data });
+		}
+		res.status(200).json({ message: "Confirm successfully" });
+	} catch (error: any) {
+		console.log(error);
+		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
+	}
+};
+
+// const cancelConfirmJob = async (req: Request, res: Response) => {
+// 	try {
+// 		const { id, times } = req.params;
+// 		const { note } = req.body;
+// 		const adminId = req.body.user.id;
+// 		const admin = await findOneService(AdminModal, { _id: adminId });
+// 		if (!admin) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
+// 		let data = {
+// 			confirmed: 0,
+// 			confirmAt: new Date(),
+// 			confirmBy: adminId,
+// 			note: note,
+// 		};
+// 		if (times === "1") {
+// 			const updatedJob = await updateOneService(JobModal, { _id: id }, { confirm1: data });
+// 		} else if (times === "2") {
+// 			const updatedJob = await updateOneService(JobModal, { _id: id }, { confirm2: data });
+// 		}
+// 		res.status(200).json({ message: "Cancel confirm successfully" });
+// 	} catch (error: any) {
+// 		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
+// 	}
+// };
+
+// const notConfirmJob = async (req: Request, res: Response) => {
+// 	try {
+// 		const { id, times } = req.params;
+// 		const { note } = req.body;
+// 		const adminId = req.body.user.id;
+// 		const admin = await findOneService(AdminModal, { _id: adminId });
+// 		if (!admin) return res.status(404).json({ message: errorResponse["USER_NOT_FOUND"] });
+// 		let data = {
+// 			confirmed: -1,
+// 			confirmAt: new Date(),
+// 			confirmBy: adminId,
+// 			note: note,
+// 		};
+// 		if (times === "1") {
+// 			const updatedJob = await updateOneService(JobModal, { _id: id }, { confirm1: data });
+// 		} else if (times === "2") {
+// 			const updatedJob = await updateOneService(JobModal, { _id: id }, { confirm2: data });
+// 		}
+// 		res.status(200).json({ message: "Not confirm successfully" });
+// 	} catch (error: any) {
+// 		res.status(500).json({ message: errorResponse["SERVER_ERROR"] });
+// 	}
+// };
+
+export {
+	confirmResume,
+	cancelConfirmResume,
+	getRole,
+	login,
+	notConfirmResume,
+	confirmCompany,
+	cancelConfirmCompany,
+	notConfirmCompany,
+	confirmJob,
+};

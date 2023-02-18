@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getOrdersByCompany = exports.getOrdersByEmployee = exports.createOrder = void 0;
+const order_service_1 = require("../services/order.service");
 const order_model_1 = __importDefault(require("../models/order.model"));
 const model_service_1 = require("../services/model.service");
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -31,8 +32,9 @@ exports.createOrder = createOrder;
 const getOrdersByEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { employeeId } = req.params;
-        const { status } = req.query;
-        const orders = yield (0, model_service_1.findManyService)(order_model_1.default, { employeeId, sender: "employee", status });
+        const { sender, status } = req.body;
+        let query = { employeeId, sender, status };
+        const orders = yield (0, order_service_1.getListOrderService)(query);
         res.status(200).json({ data: orders, message: "Get all orders successfully" });
     }
     catch (error) {

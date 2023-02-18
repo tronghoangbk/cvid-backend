@@ -246,9 +246,11 @@ exports.deleteShortTraining = deleteShortTraining;
 const addWorkExperience = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
-        let { start, end, company, address, leaving, process } = req.body;
-        start = process[0].from;
-        end = process[process.length - 1].to;
+        let { start, end, company, address, leaving, process, isWorking, isCurrent } = req.body;
+        if (process.length > 0) {
+            start = process[0].from;
+            end = process[process.length - 1].to;
+        }
         const newWorkExperience = {
             start,
             end,
@@ -256,6 +258,8 @@ const addWorkExperience = (req, res) => __awaiter(void 0, void 0, void 0, functi
             address,
             leaving,
             process,
+            isCurrent,
+            isWorking,
         };
         yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { $push: { workExperience: newWorkExperience } });
         res.status(200).json({ message: "Add work experience successfully" });
@@ -328,18 +332,21 @@ const findJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
         let jobCriteria = req.body;
+        console.log(jobCriteria);
         jobCriteria = (0, other_service_1.removeUndefinedOfObj)(jobCriteria);
         let employeeInfo = yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { jobCriteria });
-        if (employeeInfo.jobCriteria.status === false) {
+        if (jobCriteria.status === false) {
             return res.status(200).json({ message: "Stop find job successfully", data: [] });
         }
-        console.log("jobCriteria", jobCriteria);
         let query = {
             companyType: jobCriteria.companyType,
-            "departments.jobs.industry": jobCriteria.industry,
             "departments.jobs.location": jobCriteria.province,
-            "departments.jobs.major": { $all: jobCriteria.major },
+            "departments.jobs.major": { $in: [jobCriteria.major] },
             "departments.jobs.title": jobCriteria.jobTitle,
+            "departments.jobs.workingEnvironment": jobCriteria.environment.length > 0 ? { $all: jobCriteria.environment } : undefined,
+            "departments.jobs.status": true,
+            "departments.jobs.industry": undefined,
+            "departments.jobs.position": jobCriteria.position.length > 0 ? { $all: jobCriteria.position } : undefined,
         };
         let listCompany = yield (0, model_service_1.findManyService)(company_model_1.default, query);
         let listJob = [];
@@ -353,9 +360,6 @@ const findJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     if (jobCriteria.province && job.location != jobCriteria.province) {
                         flag = false;
                     }
-                    if (jobCriteria.industry && job.industry != jobCriteria.industry) {
-                        flag = false;
-                    }
                     if (jobCriteria.jobTitle && job.title != jobCriteria.jobTitle) {
                         flag = false;
                     }
@@ -365,10 +369,10 @@ const findJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 });
             });
         });
-        console.log("listJob", listJob);
         res.status(200).json({ message: "Find job successfully", data: listJob });
     }
     catch (error) {
+        console.log(error);
         res.status(500).json({ message: "Something went wrong" });
     }
 });
