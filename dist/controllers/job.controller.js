@@ -28,8 +28,8 @@ const getAllJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getAllJob = getAllJob;
 const getJobForDepartment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { departmentId } = req.params;
-        const jobs = yield (0, job_service_1.getListJobService)({ departmentId });
+        const { departmentId, key } = req.params;
+        const jobs = yield (0, job_service_1.getListJobService)({ departmentId, key });
         res.status(200).json({ data: jobs, message: "Get all jobs successfully" });
     }
     catch (error) {

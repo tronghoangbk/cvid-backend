@@ -5,6 +5,7 @@ import { checkInput, checkLogin } from "../middleware/other.middleware";
 const Router = express.Router();
 
 Router.post("/create", checkLogin, createJob);
-Router.get("/get-job-for-department/:departmentId", getJobForDepartment);
+Router.get("/get-job-for-department/:departmentId/:key", getJobForDepartment);
+Router.post("/create-department", checkLogin, createDepartment);
 
 export default Router;

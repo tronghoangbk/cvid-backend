@@ -15,8 +15,8 @@ const getAllJob = async (req: Request, res: Response) => {
 
 const getJobForDepartment = async (req: Request, res: Response) => {
     try {
-        const { departmentId } = req.params;
-        const jobs = await getListJobService({ departmentId });
+        const { departmentId, key } = req.params;
+        const jobs = await getListJobService({ departmentId, key });
         res.status(200).json({ data: jobs, message: "Get all jobs successfully" });
     } catch (error: any) {
         res.status(500).json({ message: "Something went wrong" });
