@@ -44,6 +44,7 @@ const getEmployeeForJob = async (req: Request, res: Response) => {
 		const { school } = req.body;
 		const jobs = await getOneJobService({ _id: jobId, "confirm2.confirmed": 1 });
 		if (!jobs) return res.status(404).json({ message: "Job not found" });
+		
 		let query = {
 			"jobCriteria.jobTitle": jobs.title,
 			"confirm1.confirmed": 1,

@@ -22,6 +22,7 @@ import {
 import employeeModel from "../models/employee.model";
 import CompanyModal from "../models/company.model";
 import { getListJobService } from "../services/job.service";
+import { checkOrderExistService } from "../services/order.service";
 
 const login = async (req: Request, res: Response) => {
 	try {
@@ -308,39 +309,26 @@ const findJob = async (req: Request, res: Response) => {
 		const { id } = req.params;
 		let jobCriteria = req.body;
 		jobCriteria = removeUndefinedOfObj(jobCriteria);
+		console.log(jobCriteria);
 		let employeeInfo = await updateOneService(EmployeeModal, { _id: id }, { jobCriteria });
 		if (jobCriteria.status === false) {
 			return res.status(200).json({ message: "Stop find job successfully", data: [] });
 		}
 		let query = {
 			title: jobCriteria.jobTitle,
-			position: jobCriteria.position.length > 0 ? { $all: jobCriteria.position } : undefined,
-			workingEnvironment: jobCriteria.environment.length > 0 ? { $all: jobCriteria.environment } : undefined,
-			industry: jobCriteria.industry.length > 0 ? { $all: jobCriteria.industry } : undefined,
+			position: jobCriteria.position?.length > 0 ? { $all: jobCriteria.position } : undefined,
+			workingEnvironment: jobCriteria.environment?.length > 0 ? { $all: jobCriteria.environment } : undefined,
+			industry: jobCriteria.industry?.length > 0 ? { $all: jobCriteria.industry } : undefined,
 			location: jobCriteria.province ? jobCriteria.province : undefined,
 			major: { $in: jobCriteria.major },
+			status: true,
 		};
-		let listCompany = await getListJobService(query)
-		let listJob: any = [];
-		listCompany.forEach((company: any) => {
-			company.departments.forEach((department: any) => {
-				department.jobs.forEach((job: any) => {
-					let flag = true;
-					if (!job.major.includes(jobCriteria.major)) {
-						flag = false;
-					}
-					if (jobCriteria.province && job.location != jobCriteria.province) {
-						flag = false;
-					}
-					if (jobCriteria.jobTitle && job.title != jobCriteria.jobTitle) {
-						flag = false;
-					}
-					if (flag) {
-						listJob.push(job);
-					}
-				});
-			});
-		});
+		let listJob = await getListJobService(query);
+		listJob = await Promise.all(
+			listJob.filter(async job => {
+				return !(await checkOrderExistService({ jobId: job._id, employeeId: id }));
+			}),
+		);
 		res.status(200).json({ message: "Find job successfully", data: listJob });
 	} catch (error: any) {
 		console.log(error);

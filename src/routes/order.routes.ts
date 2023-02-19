@@ -5,5 +5,6 @@ const orderRouter = express.Router();
 
 orderRouter.post("/create", createOrder);
 orderRouter.post("/get-order-by-employee-id/employeeId/:employeeId", getOrdersByEmployee);
+orderRouter.post("/get-order-by-company-id/companyId/:companyId", getOrdersByCompany);
 
 export default orderRouter;

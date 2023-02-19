@@ -22,6 +22,7 @@ const default_constant_1 = require("../constant/default.constant");
 const other_service_1 = require("../services/other.service");
 const employee_model_2 = __importDefault(require("../models/employee.model"));
 const job_service_1 = require("../services/job.service");
+const order_service_1 = require("../services/order.service");
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, password } = req.body;
@@ -326,43 +327,29 @@ const confirmPhone = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.confirmPhone = confirmPhone;
 const findJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
     try {
         const { id } = req.params;
         let jobCriteria = req.body;
         jobCriteria = (0, other_service_1.removeUndefinedOfObj)(jobCriteria);
+        console.log(jobCriteria);
         let employeeInfo = yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { jobCriteria });
         if (jobCriteria.status === false) {
             return res.status(200).json({ message: "Stop find job successfully", data: [] });
         }
         let query = {
             title: jobCriteria.jobTitle,
-            position: jobCriteria.position.length > 0 ? { $all: jobCriteria.position } : undefined,
-            workingEnvironment: jobCriteria.environment.length > 0 ? { $all: jobCriteria.environment } : undefined,
-            industry: jobCriteria.industry.length > 0 ? { $all: jobCriteria.industry } : undefined,
+            position: ((_a = jobCriteria.position) === null || _a === void 0 ? void 0 : _a.length) > 0 ? { $all: jobCriteria.position } : undefined,
+            workingEnvironment: ((_b = jobCriteria.environment) === null || _b === void 0 ? void 0 : _b.length) > 0 ? { $all: jobCriteria.environment } : undefined,
+            industry: ((_c = jobCriteria.industry) === null || _c === void 0 ? void 0 : _c.length) > 0 ? { $all: jobCriteria.industry } : undefined,
             location: jobCriteria.province ? jobCriteria.province : undefined,
             major: { $in: jobCriteria.major },
+            status: true,
         };
-        let listCompany = yield (0, job_service_1.getListJobService)(query);
-        let listJob = [];
-        listCompany.forEach((company) => {
-            company.departments.forEach((department) => {
-                department.jobs.forEach((job) => {
-                    let flag = true;
-                    if (!job.major.includes(jobCriteria.major)) {
-                        flag = false;
-                    }
-                    if (jobCriteria.province && job.location != jobCriteria.province) {
-                        flag = false;
-                    }
-                    if (jobCriteria.jobTitle && job.title != jobCriteria.jobTitle) {
-                        flag = false;
-                    }
-                    if (flag) {
-                        listJob.push(job);
-                    }
-                });
-            });
-        });
+        let listJob = yield (0, job_service_1.getListJobService)(query);
+        listJob = yield Promise.all(listJob.filter((job) => __awaiter(void 0, void 0, void 0, function* () {
+            return !(yield (0, order_service_1.checkOrderExistService)({ jobId: job._id, employeeId: id }));
+        })));
         res.status(200).json({ message: "Find job successfully", data: listJob });
     }
     catch (error) {

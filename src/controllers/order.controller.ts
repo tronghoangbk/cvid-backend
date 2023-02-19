@@ -12,8 +12,7 @@ import {
 
 const createOrder = async (req: Request, res: Response) => {
 	try {
-		const data = req.body;
-		console.log(data);
+		const data: { jobId: string, employeeId: string, sender: string, rating: string, comment: string } = req.body;
 		await createService(OrderModel, data);
 		res.status(200).json({ message: "Create orders successfully" });
 	} catch (error: any) {
@@ -21,7 +20,6 @@ const createOrder = async (req: Request, res: Response) => {
 	}
 };
 
-// Lấy các việc đã chọn cuar userId
 const getOrdersByEmployee = async (req: Request, res: Response) => {
 	try {
 		const { employeeId } = req.params;
@@ -37,8 +35,9 @@ const getOrdersByEmployee = async (req: Request, res: Response) => {
 const getOrdersByCompany = async (req: Request, res: Response) => {
 	try {
 		const { companyId } = req.params;
-		const { status } = req.query;
-		const orders = await findManyService(OrderModel, { companyId, sender: "company", status });
+		const { sender, status } = req.body;
+		const query = { companyId, sender, status };
+		const orders = await getListOrderService(query);
 		res.status(200).json({ data: orders, message: "Get all orders successfully" });
 	} catch (error: any) {
 		res.status(500).json({ message: "Something went wrong" });

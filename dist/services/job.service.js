@@ -21,8 +21,8 @@ const getOneJobService = (query) => __awaiter(void 0, void 0, void 0, function* 
         .findOne(query)
         .populate({ path: "companyInfo", select: "companyType" })
         .populate({ path: "departmentInfo", select: "departmentName" })
-        .populate({ path: "adminConfirm1", select: "" })
-        .populate({ path: "adminConfirm2", select: "" })
+        .populate({ path: "adminConfirm1", select: "name" })
+        .populate({ path: "adminConfirm2", select: "name" })
         .lean();
     return job;
 });
@@ -33,8 +33,8 @@ const getListJobService = (query) => __awaiter(void 0, void 0, void 0, function*
         .find(query)
         .populate({ path: "companyInfo", select: "companyType" })
         .populate({ path: "departmentInfo", select: "departmentName" })
-        .populate({ path: "adminConfirm1", select: "" })
-        .populate({ path: "adminConfirm2", select: "" })
+        .populate({ path: "adminConfirm1", select: "name" })
+        .populate({ path: "adminConfirm2", select: "name" })
         .lean();
     return jobs;
 });
@@ -45,8 +45,8 @@ const getOneJobFullInfoService = (query) => __awaiter(void 0, void 0, void 0, fu
         .find(query)
         .populate({ path: "companyInfo" })
         .populate({ path: "departmentInfo" })
-        .populate({ path: "adminConfirm1" })
-        .populate({ path: "adminConfirm2" })
+        .populate({ path: "adminConfirm1", select: "name" })
+        .populate({ path: "adminConfirm2", select: "name" })
         .lean();
     return job;
 });
@@ -57,8 +57,8 @@ const getListJobFullInfoService = (query) => __awaiter(void 0, void 0, void 0, f
         .find(query)
         .populate({ path: "companyInfo" })
         .populate({ path: "departmentInfo" })
-        .populate({ path: "adminConfirm1" })
-        .populate({ path: "adminConfirm2" })
+        .populate({ path: "adminConfirm1", select: "name" })
+        .populate({ path: "adminConfirm2", select: "name" })
         .lean();
     return jobs;
 });

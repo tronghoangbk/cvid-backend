@@ -19,7 +19,6 @@ const model_service_1 = require("../services/model.service");
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = req.body;
-        console.log(data);
         yield (0, model_service_1.createService)(order_model_1.default, data);
         res.status(200).json({ message: "Create orders successfully" });
     }
@@ -28,7 +27,6 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.createOrder = createOrder;
-// Lấy các việc đã chọn cuar userId
 const getOrdersByEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { employeeId } = req.params;
@@ -45,8 +43,9 @@ exports.getOrdersByEmployee = getOrdersByEmployee;
 const getOrdersByCompany = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { companyId } = req.params;
-        const { status } = req.query;
-        const orders = yield (0, model_service_1.findManyService)(order_model_1.default, { companyId, sender: "company", status });
+        const { sender, status } = req.body;
+        const query = { companyId, sender, status };
+        const orders = yield (0, order_service_1.getListOrderService)(query);
         res.status(200).json({ data: orders, message: "Get all orders successfully" });
     }
     catch (error) {
