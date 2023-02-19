@@ -21,7 +21,7 @@ const fs_1 = __importDefault(require("fs"));
 const default_constant_1 = require("../constant/default.constant");
 const other_service_1 = require("../services/other.service");
 const employee_model_2 = __importDefault(require("../models/employee.model"));
-const company_model_1 = __importDefault(require("../models/company.model"));
+const job_service_1 = require("../services/job.service");
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, password } = req.body;
@@ -317,10 +317,6 @@ const confirmPhone = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             return res.status(400).json({ message: errorResponse_constant_1.errorResponse["NOT_FOUND"] });
         }
         const decoded = (0, other_service_1.verifyToken)(user.otp);
-        console.log(decoded.otp, otp);
-        // if (decoded.otp != otp) {
-        // 	return res.status(400).json({ message: errorResponse["OTP_INVALID"] });
-        // }
         yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { otp: null, confirmPhone: true, username: decoded.phone });
         res.status(200).json({ message: "Confirm phone successfully" });
     }
@@ -333,23 +329,20 @@ const findJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
         let jobCriteria = req.body;
-        console.log(jobCriteria);
         jobCriteria = (0, other_service_1.removeUndefinedOfObj)(jobCriteria);
         let employeeInfo = yield (0, model_service_1.updateOneService)(employee_model_1.default, { _id: id }, { jobCriteria });
         if (jobCriteria.status === false) {
             return res.status(200).json({ message: "Stop find job successfully", data: [] });
         }
         let query = {
-            companyType: jobCriteria.companyType,
-            "departments.jobs.location": jobCriteria.province,
-            "departments.jobs.major": { $in: [jobCriteria.major] },
-            "departments.jobs.title": jobCriteria.jobTitle,
-            "departments.jobs.workingEnvironment": jobCriteria.environment.length > 0 ? { $all: jobCriteria.environment } : undefined,
-            "departments.jobs.status": true,
-            "departments.jobs.industry": undefined,
-            "departments.jobs.position": jobCriteria.position.length > 0 ? { $all: jobCriteria.position } : undefined,
+            title: jobCriteria.jobTitle,
+            position: jobCriteria.position.length > 0 ? { $all: jobCriteria.position } : undefined,
+            workingEnvironment: jobCriteria.environment.length > 0 ? { $all: jobCriteria.environment } : undefined,
+            industry: jobCriteria.industry.length > 0 ? { $all: jobCriteria.industry } : undefined,
+            location: jobCriteria.province ? jobCriteria.province : undefined,
+            major: { $in: jobCriteria.major },
         };
-        let listCompany = yield (0, model_service_1.findManyService)(company_model_1.default, query);
+        let listCompany = yield (0, job_service_1.getListJobService)(query);
         let listJob = [];
         listCompany.forEach((company) => {
             company.departments.forEach((department) => {

@@ -4,6 +4,8 @@ import jobModel from "../models/job.model";
 import { createService, findManyService } from "../services/model.service";
 import { IJob } from "../interfaces/job.interface";
 import { getListEmployee } from "../services/employee.service";
+import { check } from "prettier";
+import { checkOrderExistService } from "../services/order.service";
 
 const getAllJob = async (req: Request, res: Response) => {
 	try {
@@ -48,8 +50,15 @@ const getEmployeeForJob = async (req: Request, res: Response) => {
 			"confirm2.confirmed": 1,
 			status: true,
 			major: { $in: jobs.major },
+			school,
 		};
-		let list = await getListEmployee(query);
+		let listEmployee = await getListEmployee(query);
+		let list = await Promise.all(
+			listEmployee.filter(async item => {
+				return !(await checkOrderExistService({ employeeId: item._id, jobId }));
+			}),
+		);
+
 		res.status(200).json({ data: list, message: "Get all employees successfully" });
 	} catch (error: any) {
 		console.log(error);
@@ -68,6 +77,5 @@ const gẹtJobDetail = async (req: Request, res: Response) => {
 		res.status(500).json({ message: "Something went wrong" });
 	}
 };
-
 
 export { getAllJob, getJobForDepartment, createJob, getEmployeeForJob, gẹtJobDetail };

@@ -21,6 +21,7 @@ import {
 } from "../services/other.service";
 import employeeModel from "../models/employee.model";
 import CompanyModal from "../models/company.model";
+import { getListJobService } from "../services/job.service";
 
 const login = async (req: Request, res: Response) => {
 	try {
@@ -295,10 +296,6 @@ const confirmPhone = async (req: Request, res: Response) => {
 			return res.status(400).json({ message: errorResponse["NOT_FOUND"] });
 		}
 		const decoded = verifyToken(user.otp);
-		console.log(decoded.otp, otp);
-		// if (decoded.otp != otp) {
-		// 	return res.status(400).json({ message: errorResponse["OTP_INVALID"] });
-		// }
 		await updateOneService(EmployeeModal, { _id: id }, { otp: null, confirmPhone: true, username: decoded.phone });
 		res.status(200).json({ message: "Confirm phone successfully" });
 	} catch (error: any) {
@@ -310,24 +307,20 @@ const findJob = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
 		let jobCriteria = req.body;
-		console.log(jobCriteria);
 		jobCriteria = removeUndefinedOfObj(jobCriteria);
 		let employeeInfo = await updateOneService(EmployeeModal, { _id: id }, { jobCriteria });
 		if (jobCriteria.status === false) {
 			return res.status(200).json({ message: "Stop find job successfully", data: [] });
 		}
 		let query = {
-			companyType: jobCriteria.companyType,
-			"departments.jobs.location": jobCriteria.province,
-			"departments.jobs.major": { $in: [jobCriteria.major] },
-			"departments.jobs.title": jobCriteria.jobTitle,
-			"departments.jobs.workingEnvironment":
-				jobCriteria.environment.length > 0 ? { $all: jobCriteria.environment } : undefined,
-			"departments.jobs.status": true,
-			"departments.jobs.industry": undefined,
-			"departments.jobs.position": jobCriteria.position.length > 0 ? { $all: jobCriteria.position } : undefined,
+			title: jobCriteria.jobTitle,
+			position: jobCriteria.position.length > 0 ? { $all: jobCriteria.position } : undefined,
+			workingEnvironment: jobCriteria.environment.length > 0 ? { $all: jobCriteria.environment } : undefined,
+			industry: jobCriteria.industry.length > 0 ? { $all: jobCriteria.industry } : undefined,
+			location: jobCriteria.province ? jobCriteria.province : undefined,
+			major: { $in: jobCriteria.major },
 		};
-		let listCompany = await findManyService(CompanyModal, query);
+		let listCompany = await getListJobService(query)
 		let listJob: any = [];
 		listCompany.forEach((company: any) => {
 			company.departments.forEach((department: any) => {

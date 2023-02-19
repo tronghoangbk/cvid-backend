@@ -20,6 +20,7 @@ const createDepartment = async (req: Request, res: Response) => {
 const getDepartmentForCompany = async (req: Request, res: Response) => {
 	try {
 		const { companyId } = req.params;
+		if (!companyId) return res.status(400).json({ message: "Company id is required" });
 		const departments = await findManyService(departmentModel, { companyId });
 		res.status(200).json({ data: departments, message: "Get all departments successfully" });
 	} catch (error: any) {

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.countService = exports.deleteManyService = exports.deleteOneService = exports.updateManyService = exports.updateOneService = exports.findManyService = exports.findOneService = exports.createManyService = exports.createService = exports.createObjIdService = void 0;
+exports.countService = exports.deleteManyService = exports.deleteOneService = exports.updateManyService = exports.updateOneService = exports.findManyService = exports.findOneService = exports.createManyService = exports.createService = exports.createObjIdService = exports.queryExistService = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const other_service_1 = require("./other.service");
 const createObjIdService = (id) => {
@@ -20,6 +20,11 @@ const createObjIdService = (id) => {
     return objId;
 };
 exports.createObjIdService = createObjIdService;
+const queryExistService = (model, objectQuery) => __awaiter(void 0, void 0, void 0, function* () {
+    objectQuery = (0, other_service_1.removeUndefinedOfObj)(objectQuery);
+    return yield model.exists(objectQuery);
+});
+exports.queryExistService = queryExistService;
 const createService = (model, newObject) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield new model(newObject);
@@ -67,11 +72,11 @@ const findManyService = (model, objQuery, properties = "", sortObj = { createdAt
     }
 });
 exports.findManyService = findManyService;
-const updateOneService = (model, objectQuery, objectUpdate) => __awaiter(void 0, void 0, void 0, function* () {
+const updateOneService = (model, objectQuery, objectUpdate, option = { new: true, returnOriginal: false }) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         objectQuery = (0, other_service_1.removeUndefinedOfObj)(objectQuery);
         objectUpdate = (0, other_service_1.removeUndefinedOfObj)(objectUpdate);
-        const result = yield model.findOneAndUpdate(objectQuery, objectUpdate);
+        const result = yield model.findOneAndUpdate(objectQuery, objectUpdate, option);
         return result;
     }
     catch (error) {
@@ -80,11 +85,11 @@ const updateOneService = (model, objectQuery, objectUpdate) => __awaiter(void 0,
     }
 });
 exports.updateOneService = updateOneService;
-const updateManyService = (model, objectQuery, objectUpdate) => __awaiter(void 0, void 0, void 0, function* () {
+const updateManyService = (model, objectQuery, objectUpdate, option = { new: true }) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         objectQuery = (0, other_service_1.removeUndefinedOfObj)(objectQuery);
         objectUpdate = (0, other_service_1.removeUndefinedOfObj)(objectUpdate);
-        const result = yield model.updateMany(objectQuery, objectUpdate);
+        const result = yield model.updateMany(objectQuery, objectUpdate, option);
         return result;
     }
     catch (error) {

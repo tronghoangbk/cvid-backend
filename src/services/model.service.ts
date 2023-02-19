@@ -6,6 +6,11 @@ const createObjIdService = (id: string) => {
 	return objId;
 };
 
+const queryExistService = async (model: any, objectQuery: any): Promise<boolean> => {
+	objectQuery = removeUndefinedOfObj(objectQuery);
+	return await model.exists(objectQuery);
+};
+
 const createService = async (model: any, newObject: object) => {
 	try {
 		const result = await new model(newObject);
@@ -56,11 +61,16 @@ const findManyService = async (
 	}
 };
 
-const updateOneService = async (model: any, objectQuery: object, objectUpdate: object) => {
+const updateOneService = async (
+	model: any,
+	objectQuery: object,
+	objectUpdate: object,
+	option: object = { new: true, returnOriginal: false },
+) => {
 	try {
 		objectQuery = removeUndefinedOfObj(objectQuery);
 		objectUpdate = removeUndefinedOfObj(objectUpdate);
-		const result = await model.findOneAndUpdate(objectQuery, objectUpdate);
+		const result = await model.findOneAndUpdate(objectQuery, objectUpdate, option);
 		return result;
 	} catch (error: any) {
 		console.log(error.message);
@@ -68,11 +78,16 @@ const updateOneService = async (model: any, objectQuery: object, objectUpdate: o
 	}
 };
 
-const updateManyService = async (model: any, objectQuery: object, objectUpdate: object) => {
+const updateManyService = async (
+	model: any,
+	objectQuery: object,
+	objectUpdate: object,
+	option: object = { new: true },
+) => {
 	try {
 		objectQuery = removeUndefinedOfObj(objectQuery);
 		objectUpdate = removeUndefinedOfObj(objectUpdate);
-		const result = await model.updateMany(objectQuery, objectUpdate);
+		const result = await model.updateMany(objectQuery, objectUpdate, option);
 		return result;
 	} catch (error: any) {
 		console.log(error.message);
@@ -114,6 +129,7 @@ const countService = async (model: any, objQuery: object) => {
 };
 
 export {
+	queryExistService,
 	createObjIdService,
 	createService,
 	createManyService,

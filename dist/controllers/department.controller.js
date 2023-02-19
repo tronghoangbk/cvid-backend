@@ -33,6 +33,8 @@ exports.createDepartment = createDepartment;
 const getDepartmentForCompany = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { companyId } = req.params;
+        if (!companyId)
+            return res.status(400).json({ message: "Company id is required" });
         const departments = yield (0, model_service_1.findManyService)(department_model_1.default, { companyId });
         res.status(200).json({ data: departments, message: "Get all departments successfully" });
     }

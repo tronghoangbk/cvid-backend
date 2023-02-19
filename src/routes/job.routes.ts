@@ -14,7 +14,7 @@ Router.post("/create", checkLogin, createJob);
 Router.get("/get-job-for-department/:departmentId/:key", getJobForDepartment);
 Router.post("/create-department", checkLogin, createDepartment);
 Router.get("/get-all", checkAdmin, getAllJob);
-Router.get("/get-employee-for-job", getEmployeeForJob);
+Router.post("/get-employee-for-job/:jobId", getEmployeeForJob);
 Router.get("/get-job-detail/:id", gẹtJobDetail);
 
 

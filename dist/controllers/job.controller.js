@@ -17,6 +17,7 @@ const job_service_1 = require("../services/job.service");
 const job_model_1 = __importDefault(require("../models/job.model"));
 const model_service_1 = require("../services/model.service");
 const employee_service_1 = require("../services/employee.service");
+const order_service_1 = require("../services/order.service");
 const getAllJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const jobs = yield (0, job_service_1.getListJobFullInfoService)({});
@@ -64,8 +65,12 @@ const getEmployeeForJob = (req, res) => __awaiter(void 0, void 0, void 0, functi
             "confirm2.confirmed": 1,
             status: true,
             major: { $in: jobs.major },
+            school,
         };
-        let list = yield (0, employee_service_1.getListEmployee)(query);
+        let listEmployee = yield (0, employee_service_1.getListEmployee)(query);
+        let list = yield Promise.all(listEmployee.filter((item) => __awaiter(void 0, void 0, void 0, function* () {
+            return !(yield (0, order_service_1.checkOrderExistService)({ employeeId: item._id, jobId }));
+        })));
         res.status(200).json({ data: list, message: "Get all employees successfully" });
     }
     catch (error) {
