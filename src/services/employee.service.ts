@@ -1,4 +1,5 @@
 import employeeModel from "../models/employee.model";
+import { removeUndefinedOfObj } from "./other.service";
 const getOneEmployee = async (query: object) => {
 	let employee = await  employeeModel.findOne(query, { password: 0, username: 0, email: 0, address: 0 });
 	return employee;
@@ -10,6 +11,7 @@ const getOneEmployeeFullInfo = async (query: object) => {
 }
 
 const getListEmployee = async (query: object) => {
+    query = removeUndefinedOfObj(query);
 	let employees = await  employeeModel.find(query, { password: 0, username: 0, email: 0, address: 0 });
 	return employees;
 };

@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getListEmployeeFullInfo = exports.getOneEmployeeFullInfo = exports.getListEmployee = exports.getOneEmployee = void 0;
 const employee_model_1 = __importDefault(require("../models/employee.model"));
+const other_service_1 = require("./other.service");
 const getOneEmployee = (query) => __awaiter(void 0, void 0, void 0, function* () {
     let employee = yield employee_model_1.default.findOne(query, { password: 0, username: 0, email: 0, address: 0 });
     return employee;
@@ -25,6 +26,7 @@ const getOneEmployeeFullInfo = (query) => __awaiter(void 0, void 0, void 0, func
 });
 exports.getOneEmployeeFullInfo = getOneEmployeeFullInfo;
 const getListEmployee = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    query = (0, other_service_1.removeUndefinedOfObj)(query);
     let employees = yield employee_model_1.default.find(query, { password: 0, username: 0, email: 0, address: 0 });
     return employees;
 });

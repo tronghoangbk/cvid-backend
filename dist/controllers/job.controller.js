@@ -56,6 +56,7 @@ const getEmployeeForJob = (req, res) => __awaiter(void 0, void 0, void 0, functi
     try {
         const { jobId } = req.params;
         const { school } = req.body;
+        console.log(school);
         const jobs = yield (0, job_service_1.getOneJobService)({ _id: jobId, "confirm2.confirmed": 1 });
         if (!jobs)
             return res.status(404).json({ message: "Job not found" });
@@ -63,8 +64,8 @@ const getEmployeeForJob = (req, res) => __awaiter(void 0, void 0, void 0, functi
             "jobCriteria.jobTitle": jobs.title,
             "confirm1.confirmed": 1,
             "confirm2.confirmed": 1,
-            status: true,
-            major: { $in: jobs.major },
+            "jobCriteria.status": true,
+            "jobCriteria.major": { $in: jobs.major },
             school,
         };
         let listEmployee = yield (0, employee_service_1.getListEmployee)(query);

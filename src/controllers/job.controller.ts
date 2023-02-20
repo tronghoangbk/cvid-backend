@@ -42,15 +42,15 @@ const getEmployeeForJob = async (req: Request, res: Response) => {
 	try {
 		const { jobId } = req.params;
 		const { school } = req.body;
+		console.log(school);
 		const jobs = await getOneJobService({ _id: jobId, "confirm2.confirmed": 1 });
 		if (!jobs) return res.status(404).json({ message: "Job not found" });
-		
 		let query = {
 			"jobCriteria.jobTitle": jobs.title,
 			"confirm1.confirmed": 1,
 			"confirm2.confirmed": 1,
-			status: true,
-			major: { $in: jobs.major },
+			"jobCriteria.status": true,
+			"jobCriteria.major": { $in: jobs.major },
 			school,
 		};
 		let listEmployee = await getListEmployee(query);
@@ -59,7 +59,6 @@ const getEmployeeForJob = async (req: Request, res: Response) => {
 				return !(await checkOrderExistService({ employeeId: item._id, jobId }));
 			}),
 		);
-
 		res.status(200).json({ data: list, message: "Get all employees successfully" });
 	} catch (error: any) {
 		console.log(error);
