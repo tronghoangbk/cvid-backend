@@ -7,7 +7,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const company_model_1 = __importDefault(require("./company.model"));
 const Schema = mongoose_1.default.Schema;
 const departments = new Schema({
-    companyId: { type: Schema.Types.ObjectId, ref: company_model_1.default },
+    companyId: { type: Schema.Types.ObjectId, ref: company_model_1.default, required: true },
     departmentName: { type: String, required: true },
     key: { type: String, unique: true },
     managerName: { type: String },

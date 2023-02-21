@@ -347,9 +347,17 @@ const findJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             status: true,
         };
         let listJob = yield (0, job_service_1.getListJobService)(query);
-        listJob = yield Promise.all(listJob.filter((job) => __awaiter(void 0, void 0, void 0, function* () {
-            return (yield (0, order_service_1.checkOrderExistService)({ jobId: job._id, employeeId: id }));
-        })));
+        let listOrder = yield (0, order_service_1.getListOrderService)({ employeeId: id });
+        listJob = listJob.filter(job => {
+            let check = true;
+            for (let order of listOrder) {
+                if (order.jobId.toString() === job._id.toString()) {
+                    check = false;
+                    break;
+                }
+            }
+            return check;
+        });
         res.status(200).json({ message: "Find job successfully", data: listJob });
     }
     catch (error) {
