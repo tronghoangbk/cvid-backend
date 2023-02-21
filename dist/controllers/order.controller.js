@@ -12,10 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrdersByCompany = exports.getOrdersByEmployee = exports.createOrder = void 0;
+exports.getOrdersByDepartment = exports.getOrdersByEmployee = exports.createOrder = void 0;
 const order_service_1 = require("../services/order.service");
 const order_model_1 = __importDefault(require("../models/order.model"));
 const model_service_1 = require("../services/model.service");
+const department_model_1 = __importDefault(require("../models/department.model"));
+const job_model_1 = __importDefault(require("../models/job.model"));
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = req.body;
@@ -43,16 +45,21 @@ const getOrdersByEmployee = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.getOrdersByEmployee = getOrdersByEmployee;
-const getOrdersByCompany = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getOrdersByDepartment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { companyId } = req.params;
-        const { sender, status } = req.body;
-        const query = { companyId, sender, status };
-        const orders = yield (0, order_service_1.getListOrderService)(query);
+        const { key } = req.params;
+        const { sender } = req.body;
+        const departmentId = yield (0, model_service_1.findOneService)(department_model_1.default, { key });
+        const listJob = yield (0, model_service_1.findManyService)(job_model_1.default, { departmentId });
+        let orders = [];
+        yield Promise.all(listJob.map((item) => __awaiter(void 0, void 0, void 0, function* () {
+            const order = yield (0, order_service_1.getListOrderService)({ jobId: item._id, sender });
+            orders = [...orders, ...order];
+        })));
         res.status(200).json({ data: orders, message: "Get all orders successfully" });
     }
     catch (error) {
         res.status(500).json({ message: "Something went wrong" });
     }
 });
-exports.getOrdersByCompany = getOrdersByCompany;
+exports.getOrdersByDepartment = getOrdersByDepartment;

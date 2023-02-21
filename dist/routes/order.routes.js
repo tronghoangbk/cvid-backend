@@ -9,5 +9,5 @@ const order_controller_1 = require("../controllers/order.controller");
 const orderRouter = express_1.default.Router();
 orderRouter.post("/create", other_middleware_1.checkLogin, order_controller_1.createOrder);
 orderRouter.get("/get-order-for-employee", other_middleware_1.checkLogin, order_controller_1.getOrdersByEmployee);
-orderRouter.post("/get-order-by-company-id/companyId/:companyId", order_controller_1.getOrdersByCompany);
+orderRouter.post("/get-order-for-department/:key", order_controller_1.getOrdersByDepartment);
 exports.default = orderRouter;
