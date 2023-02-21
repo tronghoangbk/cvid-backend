@@ -22,7 +22,7 @@ import {
 import employeeModel from "../models/employee.model";
 import CompanyModal from "../models/company.model";
 import { getListJobService } from "../services/job.service";
-import { checkOrderExistService } from "../services/order.service";
+import { checkOrderExistService, getListOrderService } from "../services/order.service";
 
 const login = async (req: Request, res: Response) => {
 	try {
@@ -324,11 +324,17 @@ const findJob = async (req: Request, res: Response) => {
 			status: true,
 		};
 		let listJob = await getListJobService(query);
-		listJob = await Promise.all(
-			listJob.filter(async job => {
-				return (await checkOrderExistService({ jobId: job._id, employeeId: id }));
-			}),
-		);
+		let listOrder = await getListOrderService({ employeeId: id });
+		listJob = listJob.filter(job => {
+			let check = true;
+			for (let order of listOrder) {
+				if (order.jobId!.toString() === job._id.toString()) {
+					check = false;
+					break;
+				}
+			}
+			return check;
+		});
 		res.status(200).json({ message: "Find job successfully", data: listJob });
 	} catch (error: any) {
 		console.log(error);

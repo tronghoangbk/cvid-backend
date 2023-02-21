@@ -6,9 +6,9 @@ import JobModel from "./job.model";
 const Schema = mongoose.Schema;
 const order = new Schema(
 	{
-        jobId: { type: Schema.Types.ObjectId },
-        employeeId: { type: Schema.Types.ObjectId },
-        sender: { type: String, enum: ["employee", "company"] },
+        jobId: { type: Schema.Types.ObjectId, required: true },
+        employeeId: { type: Schema.Types.ObjectId, required: true },
+        sender: { type: String, enum: ["employee", "company"], required: true },
         rating: { type: String, enum: ["A", "B", "C"] },
         comment: { type: String },
         status: { type: String, enum: ["pending", "confirmed", "rejected"], default: "pending" },

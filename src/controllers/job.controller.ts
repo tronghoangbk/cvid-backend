@@ -5,7 +5,7 @@ import { createService, findManyService } from "../services/model.service";
 import { IJob } from "../interfaces/job.interface";
 import { getListEmployee } from "../services/employee.service";
 import { check } from "prettier";
-import { checkOrderExistService } from "../services/order.service";
+import { checkOrderExistService, getListOrderService } from "../services/order.service";
 
 const getAllJob = async (req: Request, res: Response) => {
 	try {
@@ -54,11 +54,15 @@ const getEmployeeForJob = async (req: Request, res: Response) => {
 			school,
 		};
 		let listEmployee = await getListEmployee(query);
-		let list = await Promise.all(
-			listEmployee.map(async item => {
-				return !(await checkOrderExistService({ employeeId: item._id, jobId }));
-			}),
-		);
+		let listOrder = await getListOrderService({ jobId });
+		let list = listEmployee.filter((item) => {
+			let check = true;
+			listOrder.forEach((order) => {
+				if (order.employeeId == item._id) check = false;
+			});
+			return check;
+		});
+
 		res.status(200).json({ data: list, message: "Get all employees successfully" });
 	} catch (error: any) {
 		console.log(error);

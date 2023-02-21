@@ -6,10 +6,10 @@ const Schema = mongoose.Schema;
 
 const Job = new Schema(
 	{
-        companyId: { type: Schema.Types.ObjectId, ref: "company" },
-		departmentId: { type: Schema.Types.ObjectId, ref: "department" },
+        companyId: { type: Schema.Types.ObjectId, required: true },
+		departmentId: { type: Schema.Types.ObjectId, required: true },
 		title: { type: String, required: true },
-		position: { type: String },
+		position: { type: String, required: true },
 		level: { type: Array },
 		major: { type: Array },
 		industry: { type: String },

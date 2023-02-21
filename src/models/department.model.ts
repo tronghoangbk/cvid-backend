@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const departments = new Schema(
 	{
-		companyId: { type: Schema.Types.ObjectId, ref: companyModel },
+		companyId: { type: Schema.Types.ObjectId, ref: companyModel, required: true },
 		departmentName: { type: String, required: true },
 		key: { type: String, unique: true },
 		managerName: { type: String },
