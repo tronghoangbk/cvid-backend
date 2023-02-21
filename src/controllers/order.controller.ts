@@ -9,6 +9,9 @@ import {
 	updateOneService,
 	deleteOneService,
 } from "../services/model.service";
+import { getOneDepartment } from "../services/department.service";
+import departmentModel from "../models/department.model";
+import jobModel from "../models/job.model";
 
 const createOrder = async (req: Request, res: Response) => {
 	try {
@@ -34,16 +37,23 @@ const getOrdersByEmployee = async (req: Request, res: Response) => {
 	}
 };
 
-const getOrdersByCompany = async (req: Request, res: Response) => {
+const getOrdersByDepartment = async (req: Request, res: Response) => {
 	try {
-		const { companyId } = req.params;
-		const { sender, status } = req.body;
-		const query = { companyId, sender, status };
-		const orders = await getListOrderService(query);
+		const { key } = req.params;
+		const { sender } = req.body;
+		const departmentId = await findOneService(departmentModel, { key });
+		const listJob = await findManyService(jobModel, { departmentId });
+		let orders: any[] = [];
+		await Promise.all(
+			listJob.map(async (item: any) => {
+				const order = await getListOrderService({ jobId: item._id, sender });
+				orders = [...orders, ...order];
+			}),
+		);
 		res.status(200).json({ data: orders, message: "Get all orders successfully" });
 	} catch (error: any) {
 		res.status(500).json({ message: "Something went wrong" });
 	}
 };
 
-export { createOrder, getOrdersByEmployee, getOrdersByCompany };
+export { createOrder, getOrdersByEmployee, getOrdersByDepartment };
