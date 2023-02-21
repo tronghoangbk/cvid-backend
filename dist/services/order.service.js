@@ -19,16 +19,6 @@ const model_service_1 = require("./model.service");
 const getListOrderService = (query) => __awaiter(void 0, void 0, void 0, function* () {
     query = (0, other_service_1.removeUndefinedOfObj)(query);
     const orders = yield order_model_1.default.find(query).populate({ path: "employeeInfo" }).populate({ path: "jobInfo" }).lean();
-    orders.map((order) => {
-        let departments = order.jobInfo.departments;
-        departments.map((department) => {
-            department.jobs.map((job) => {
-                if (job._id.toString() === order.jobId.toString()) {
-                    order.jobInfo = job;
-                }
-            });
-        });
-    });
     return orders;
 });
 exports.getListOrderService = getListOrderService;

@@ -32,7 +32,7 @@ const login = async (req: Request, res: Response) => {
 		const isPasswordCorrect = comparePassword(password, user.password);
 		if (!isPasswordCorrect) return res.status(401).json({ message: errorResponse["INVALID_PASSWORD"] });
 		if (!user.confirmEmail) return res.status(403).json({ message: errorResponse["USER_NOT_CONFIRMED"] });
-		const idToken = generateToken({ id: user._id, username: user.username }, "1d");
+		const idToken = generateToken({ id: user._id, username: user.username, role: "employee" }, "1d");
 		delete user._doc.password;
 		res.status(200).json({ ...user._doc, idToken, expiresIn: "3600" });
 	} catch (error: any) {
@@ -326,7 +326,7 @@ const findJob = async (req: Request, res: Response) => {
 		let listJob = await getListJobService(query);
 		listJob = await Promise.all(
 			listJob.filter(async job => {
-				return !(await checkOrderExistService({ jobId: job._id, employeeId: id }));
+				return (await checkOrderExistService({ jobId: job._id, employeeId: id }));
 			}),
 		);
 		res.status(200).json({ message: "Find job successfully", data: listJob });

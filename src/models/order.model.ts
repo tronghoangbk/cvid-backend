@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import CompanyModel from "./company.model";
 import EmployeeModel from "./employee.model";
+import JobModel from "./job.model";
 
 const Schema = mongoose.Schema;
 const order = new Schema(
@@ -32,9 +33,9 @@ const order = new Schema(
 );
 
 order.virtual("jobInfo", {
-	ref: CompanyModel,
+	ref: JobModel,
 	localField: "jobId",
-	foreignField: "departments.jobs._id",
+	foreignField: "_id",
 	justOne: true, // for many-to-1 relationships
 });
 

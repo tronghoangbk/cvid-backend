@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
-const company_model_1 = __importDefault(require("./company.model"));
 const employee_model_1 = __importDefault(require("./employee.model"));
+const job_model_1 = __importDefault(require("./job.model"));
 const Schema = mongoose_1.default.Schema;
 const order = new Schema({
     jobId: { type: Schema.Types.ObjectId },
@@ -32,9 +32,9 @@ const order = new Schema({
     timestamps: true,
 });
 order.virtual("jobInfo", {
-    ref: company_model_1.default,
+    ref: job_model_1.default,
     localField: "jobId",
-    foreignField: "departments.jobs._id",
+    foreignField: "_id",
     justOne: true, // for many-to-1 relationships
 });
 order.virtual("employeeInfo", {

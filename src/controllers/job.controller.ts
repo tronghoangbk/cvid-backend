@@ -55,7 +55,7 @@ const getEmployeeForJob = async (req: Request, res: Response) => {
 		};
 		let listEmployee = await getListEmployee(query);
 		let list = await Promise.all(
-			listEmployee.filter(async item => {
+			listEmployee.map(async item => {
 				return !(await checkOrderExistService({ employeeId: item._id, jobId }));
 			}),
 		);

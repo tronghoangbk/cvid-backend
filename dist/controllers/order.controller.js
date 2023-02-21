@@ -19,6 +19,10 @@ const model_service_1 = require("../services/model.service");
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = req.body;
+        data.sender = req.body.user.role;
+        let isExistService = yield (0, order_service_1.checkOrderExistService)({ jobId: data.jobId, employeeId: data.employeeId });
+        if (isExistService)
+            return res.status(400).json({ message: "Order already exist" });
         yield (0, model_service_1.createService)(order_model_1.default, data);
         res.status(200).json({ message: "Create orders successfully" });
     }
@@ -29,13 +33,12 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.createOrder = createOrder;
 const getOrdersByEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { employeeId } = req.params;
-        const { sender, status } = req.body;
-        let query = { employeeId, sender, status };
-        const orders = yield (0, order_service_1.getListOrderService)(query);
+        const employeeId = req.body.user._id;
+        const orders = yield (0, order_service_1.getListOrderService)({ employeeId });
         res.status(200).json({ data: orders, message: "Get all orders successfully" });
     }
     catch (error) {
+        console.log(error);
         res.status(500).json({ message: "Something went wrong" });
     }
 });

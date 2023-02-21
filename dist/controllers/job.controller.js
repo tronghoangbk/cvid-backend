@@ -69,7 +69,7 @@ const getEmployeeForJob = (req, res) => __awaiter(void 0, void 0, void 0, functi
             school,
         };
         let listEmployee = yield (0, employee_service_1.getListEmployee)(query);
-        let list = yield Promise.all(listEmployee.filter((item) => __awaiter(void 0, void 0, void 0, function* () {
+        let list = yield Promise.all(listEmployee.map((item) => __awaiter(void 0, void 0, void 0, function* () {
             return !(yield (0, order_service_1.checkOrderExistService)({ employeeId: item._id, jobId }));
         })));
         res.status(200).json({ data: list, message: "Get all employees successfully" });

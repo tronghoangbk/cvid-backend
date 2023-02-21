@@ -34,7 +34,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return res.status(401).json({ message: errorResponse_constant_1.errorResponse["INVALID_PASSWORD"] });
         if (!user.confirmEmail)
             return res.status(403).json({ message: errorResponse_constant_1.errorResponse["USER_NOT_CONFIRMED"] });
-        const idToken = (0, other_service_1.generateToken)({ id: user._id, username: user.username }, "1d");
+        const idToken = (0, other_service_1.generateToken)({ id: user._id, username: user.username, role: "employee" }, "1d");
         delete user._doc.password;
         res.status(200).json(Object.assign(Object.assign({}, user._doc), { idToken, expiresIn: "3600" }));
     }
@@ -348,7 +348,7 @@ const findJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         };
         let listJob = yield (0, job_service_1.getListJobService)(query);
         listJob = yield Promise.all(listJob.filter((job) => __awaiter(void 0, void 0, void 0, function* () {
-            return !(yield (0, order_service_1.checkOrderExistService)({ jobId: job._id, employeeId: id }));
+            return (yield (0, order_service_1.checkOrderExistService)({ jobId: job._id, employeeId: id }));
         })));
         res.status(200).json({ message: "Find job successfully", data: listJob });
     }

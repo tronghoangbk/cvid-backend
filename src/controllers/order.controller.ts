@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { body } from "express-validator";
-import { getListOrderService } from "../services/order.service";
+import { checkOrderExistService, getListOrderService } from "../services/order.service";
 import OrderModel from "../models/order.model";
 import {
 	createService,
@@ -13,6 +13,9 @@ import {
 const createOrder = async (req: Request, res: Response) => {
 	try {
 		const data: { jobId: string, employeeId: string, sender: string, rating: string, comment: string } = req.body;
+		data.sender = req.body.user.role;
+		let isExistService = await checkOrderExistService({ jobId: data.jobId, employeeId: data.employeeId });
+		if (isExistService) return res.status(400).json({ message: "Order already exist" });
 		await createService(OrderModel, data);
 		res.status(200).json({ message: "Create orders successfully" });
 	} catch (error: any) {
@@ -22,12 +25,11 @@ const createOrder = async (req: Request, res: Response) => {
 
 const getOrdersByEmployee = async (req: Request, res: Response) => {
 	try {
-		const { employeeId } = req.params;
-		const { sender, status } = req.body;
-		let query = { employeeId, sender, status };
-		const orders = await getListOrderService(query);
+		const employeeId = req.body.user._id;
+		const orders = await getListOrderService({ employeeId });
 		res.status(200).json({ data: orders, message: "Get all orders successfully" });
 	} catch (error: any) {
+		console.log(error);
 		res.status(500).json({ message: "Something went wrong" });
 	}
 };
