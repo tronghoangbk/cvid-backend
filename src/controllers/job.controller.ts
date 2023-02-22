@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { getListJobService, getListJobFullInfoService, getOneJobService } from "../services/job.service";
 import jobModel from "../models/job.model";
-import { createService, findManyService } from "../services/model.service";
+import { createService, findManyService, updateOneService } from "../services/model.service";
 import { IJob } from "../interfaces/job.interface";
 import { getListEmployee } from "../services/employee.service";
 import { check } from "prettier";
@@ -44,7 +44,9 @@ const getEmployeeForJob = async (req: Request, res: Response) => {
 		const { school } = req.body;
 		console.log(school);
 		const jobs = await getOneJobService({ _id: jobId, "confirm2.confirmed": 1 });
+
 		if (!jobs) return res.status(404).json({ message: "Job not found" });
+		await updateOneService(jobModel, { _id: jobId }, { $set: { status: true } });
 		let query = {
 			"jobCriteria.jobTitle": jobs.title,
 			"confirm1.confirmed": 1,
@@ -55,9 +57,9 @@ const getEmployeeForJob = async (req: Request, res: Response) => {
 		};
 		let listEmployee = await getListEmployee(query);
 		let listOrder = await getListOrderService({ jobId });
-		let list = listEmployee.filter((item) => {
+		let list = listEmployee.filter(item => {
 			let check = true;
-			listOrder.forEach((order) => {
+			listOrder.forEach(order => {
 				if (order.employeeId == item._id) check = false;
 			});
 			return check;

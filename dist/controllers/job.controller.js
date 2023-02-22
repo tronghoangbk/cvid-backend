@@ -60,6 +60,7 @@ const getEmployeeForJob = (req, res) => __awaiter(void 0, void 0, void 0, functi
         const jobs = yield (0, job_service_1.getOneJobService)({ _id: jobId, "confirm2.confirmed": 1 });
         if (!jobs)
             return res.status(404).json({ message: "Job not found" });
+        yield (0, model_service_1.updateOneService)(job_model_1.default, { _id: jobId }, { $set: { status: true } });
         let query = {
             "jobCriteria.jobTitle": jobs.title,
             "confirm1.confirmed": 1,
@@ -70,9 +71,9 @@ const getEmployeeForJob = (req, res) => __awaiter(void 0, void 0, void 0, functi
         };
         let listEmployee = yield (0, employee_service_1.getListEmployee)(query);
         let listOrder = yield (0, order_service_1.getListOrderService)({ jobId });
-        let list = listEmployee.filter((item) => {
+        let list = listEmployee.filter(item => {
             let check = true;
-            listOrder.forEach((order) => {
+            listOrder.forEach(order => {
                 if (order.employeeId == item._id)
                     check = false;
             });

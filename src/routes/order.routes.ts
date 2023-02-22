@@ -7,5 +7,5 @@ const orderRouter = express.Router();
 orderRouter.post("/create", checkLogin, createOrder);
 orderRouter.get("/get-order-for-employee", checkLogin, getOrdersByEmployee);
 orderRouter.post("/get-order-for-department/:key", getOrdersByDepartment);
-
+orderRouter.post("/update");
 export default orderRouter;
