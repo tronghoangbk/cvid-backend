@@ -19,15 +19,18 @@ const model_service_1 = require("./model.service");
 const getListOrderService = (query) => __awaiter(void 0, void 0, void 0, function* () {
     query = (0, other_service_1.removeUndefinedOfObj)(query);
     const orders = yield order_model_1.default.find(query)
-        .populate({ path: "employeeInfo", select: "jobCriteria" })
-        .populate({ path: "jobInfo" })
+        .populate({ path: "employeeInfo", select: "jobCriteria name pointList point" })
+        .populate({ path: "jobInfo", populate: { path: "companyInfo departmentInfo", select: "departmentName" } })
         .lean();
     return orders;
 });
 exports.getListOrderService = getListOrderService;
 const getListOrderFullInfoService = (query) => __awaiter(void 0, void 0, void 0, function* () {
     query = (0, other_service_1.removeUndefinedOfObj)(query);
-    const orders = yield order_model_1.default.find(query).populate({ path: "employeeInfo" }).populate({ path: "jobInfo" }).lean();
+    const orders = yield order_model_1.default.find(query)
+        .populate({ path: "employeeInfo" })
+        .populate({ path: "jobInfo", populate: { path: "companyInfo" } })
+        .lean();
     return orders;
 });
 exports.getListOrderFullInfoService = getListOrderFullInfoService;

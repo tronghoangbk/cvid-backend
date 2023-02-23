@@ -8,15 +8,18 @@ import { queryExistService } from "./model.service";
 const getListOrderService = async (query: object) => {
 	query = removeUndefinedOfObj(query);
 	const orders = await Order.find(query)
-		.populate({ path: "employeeInfo", select: "jobCriteria" })
-		.populate({ path: "jobInfo" })
+		.populate({ path: "employeeInfo", select: "jobCriteria name pointList point" })
+		.populate({ path: "jobInfo", populate: { path: "companyInfo departmentInfo", select: "departmentName" } })
 		.lean();
 	return orders;
 };
 
 const getListOrderFullInfoService = async (query: object) => {
 	query = removeUndefinedOfObj(query);
-	const orders = await Order.find(query).populate({ path: "employeeInfo" }).populate({ path: "jobInfo" }).lean();
+	const orders = await Order.find(query)
+		.populate({ path: "employeeInfo" })
+		.populate({ path: "jobInfo", populate: { path: "companyInfo" } })
+		.lean();
 	return orders;
 };
 

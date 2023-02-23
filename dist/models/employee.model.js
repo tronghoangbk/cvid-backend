@@ -42,7 +42,7 @@ const employees = new Schema({
     },
     otp: { type: String },
     confirmIdentity: { type: Boolean, default: false },
-    pointList: [{ type: Number, default: 0 }],
+    pointList: [{ type: Number, default: new Array(15).fill(0) }],
     points: { type: Number, default: 0 },
     skillLanguage: [{ type: Object }],
     jobCriteria: {
