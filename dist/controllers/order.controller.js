@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrdersByDepartment = exports.getOrdersByEmployee = exports.createOrder = void 0;
+exports.updateInterview = exports.getOrdersByDepartment = exports.getOrdersByEmployee = exports.createOrder = void 0;
 const order_service_1 = require("../services/order.service");
 const order_model_1 = __importDefault(require("../models/order.model"));
 const model_service_1 = require("../services/model.service");
+const department_service_1 = require("../services/department.service");
 const department_model_1 = __importDefault(require("../models/department.model"));
 const job_model_1 = __importDefault(require("../models/job.model"));
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -35,8 +36,9 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.createOrder = createOrder;
 const getOrdersByEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const employeeId = req.body.user._id;
-        const orders = yield (0, order_service_1.getListOrderService)({ employeeId });
+        const employeeId = req.body.user.id;
+        const { sender, status } = req.body;
+        const orders = yield (0, order_service_1.getListOrderService)({ employeeId, sender, status });
         res.status(200).json({ data: orders, message: "Get all orders successfully" });
     }
     catch (error) {
@@ -63,3 +65,28 @@ const getOrdersByDepartment = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.getOrdersByDepartment = getOrdersByDepartment;
+const updateInterview = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { key, id } = req.params;
+        const department = yield (0, department_service_1.getOneDepartment)({ key });
+        if (!department)
+            return res.status(400).json({ message: "Department not found" });
+        const { date, address, interviewer, interviewerEmail, interviewerPhone, note } = req.body;
+        const data = {
+            interview: {
+                date,
+                address,
+                interviewer,
+                interviewerEmail,
+                interviewerPhone,
+                note,
+            },
+        };
+        yield (0, model_service_1.updateOneService)(order_model_1.default, { _id: id }, data);
+        res.status(200).json({ message: "Update interview successfully" });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
+exports.updateInterview = updateInterview;

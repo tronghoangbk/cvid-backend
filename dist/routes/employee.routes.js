@@ -30,6 +30,7 @@ employeeRouter.post("/send-otp/:id", other_middleware_1.checkLogin, (0, express_
 employeeRouter.post("/confirm-phone/:id", other_middleware_1.checkLogin, (0, express_validator_1.body)("otp").notEmpty(), other_middleware_1.checkInput, employee_controller_1.confirmPhone);
 employeeRouter.put("/update-point/:id", other_middleware_1.checkLogin, employee_controller_1.updatePoint);
 employeeRouter.post("/find-job/:id", employee_controller_1.findJob);
+employeeRouter.post("/confirm-job/:orderId", other_middleware_1.checkLogin, employee_controller_1.confirmJob);
 // laays so luong nhan vien
 employeeRouter.get("/get-count-employee", employee_controller_1.getCountResume);
 employeeRouter.post("/update");

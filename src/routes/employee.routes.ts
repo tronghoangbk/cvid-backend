@@ -19,7 +19,8 @@ import {
 	deleteWorkExperience,
 	findJob,
 	getCountResume,
-	updatePoint
+	updatePoint,
+	confirmJob
 } from "../controllers/employee.controller";
 import { checkInput, checkLogin } from "../middleware/other.middleware";
 const employeeRouter = express.Router();
@@ -46,8 +47,10 @@ employeeRouter.post("/send-otp/:id", checkLogin, body("phone").notEmpty(), check
 employeeRouter.post("/confirm-phone/:id", checkLogin, body("otp").notEmpty(), checkInput, confirmPhone);
 employeeRouter.put("/update-point/:id", checkLogin, updatePoint);
 employeeRouter.post("/find-job/:id", findJob);
+employeeRouter.post("/confirm-job/:orderId", checkLogin, confirmJob);
 // laays so luong nhan vien
 employeeRouter.get("/get-count-employee", getCountResume);
+
 employeeRouter.post("/update");
 employeeRouter.post("/delete");
 

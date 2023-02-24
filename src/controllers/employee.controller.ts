@@ -20,6 +20,8 @@ import {
 	removeUndefinedOfObj,
 } from "../services/other.service";
 import employeeModel from "../models/employee.model";
+import JobModal from "../models/job.model";
+import OrderModal from "../models/order.model";
 import CompanyModal from "../models/company.model";
 import { getListJobService } from "../services/job.service";
 import { checkOrderExistService, getListOrderService } from "../services/order.service";
@@ -380,6 +382,29 @@ const updatePoint = async (req: Request, res: Response) => {
 	}
 };
 
+const confirmJob = async (req: Request, res: Response) => {
+	try {
+		const { orderId } = req.params;
+		const employeeId = req.body.user.id;
+		console.log(employeeId, orderId);
+		if (!employeeId) {
+			return res.status(400).json({ message: errorResponse["USER_NOT_FOUND"] });
+		}
+		let order = await findOneService(OrderModal, { _id: orderId, employeeId });
+		if (!order) {
+			return res.status(400).json({ message: errorResponse["NOT_FOUND"] });
+		}
+		await updateOneService(OrderModal, { _id: order._id }, { status: "confirm" });
+		res.status(200).json({ message: "Confirm job successfully" });
+	} catch (error: any) {
+		console.log(error);
+		res.status(500).json({ message: "Something went wrong" });
+	}
+};
+
+
+
+
 export {
 	login,
 	register,
@@ -403,4 +428,5 @@ export {
 	findJob,
 	getCountResume,
 	updatePoint,
+	confirmJob,
 };

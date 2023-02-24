@@ -28,8 +28,9 @@ const createOrder = async (req: Request, res: Response) => {
 
 const getOrdersByEmployee = async (req: Request, res: Response) => {
 	try {
-		const employeeId = req.body.user._id;
-		const orders = await getListOrderService({ employeeId });
+		const employeeId = req.body.user.id;
+		const { sender, status } = req.body;
+		const orders = await getListOrderService({ employeeId, sender, status });
 		res.status(200).json({ data: orders, message: "Get all orders successfully" });
 	} catch (error: any) {
 		console.log(error);
@@ -56,4 +57,27 @@ const getOrdersByDepartment = async (req: Request, res: Response) => {
 	}
 };
 
-export { createOrder, getOrdersByEmployee, getOrdersByDepartment };
+const updateInterview = async (req: Request, res: Response) => {
+	try {
+		const { key, id } = req.params;
+		const department = await getOneDepartment({key});
+		if (!department) return res.status(400).json({ message: "Department not found" });
+		const { date, address, interviewer, interviewerEmail, interviewerPhone, note } = req.body;
+		const data = {
+			interview: {
+				date,
+				address,
+				interviewer,
+				interviewerEmail,
+				interviewerPhone,
+				note,
+			},
+		};
+		await updateOneService(OrderModel, { _id: id }, data);
+		res.status(200).json({ message: "Update interview successfully" });
+	} catch (error: any) {
+		res.status(500).json({ message: "Something went wrong" });
+	}
+};
+
+export { createOrder, getOrdersByEmployee, getOrdersByDepartment, updateInterview };
